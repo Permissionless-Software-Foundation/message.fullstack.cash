@@ -1,6 +1,6 @@
 {
-  "name": "bch-wallet-starter",
-  "description": "A BCH web wallet starter for Gatsby.",
+  "name": "message.fullstack.cash",
+  "description": "E2E Encrypted Messaging App, based on wallet.fullstack.cash and encrypt-msg",
   "version": "1.0.0",
   "license": "MIT",
   "author": "Chris Troutner <chris.troutner@gmail.com>",
@@ -25,10 +25,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Permissionless-Software-Foundation/bch-wallet-starter"
+    "url": "https://github.com/Permissionless-Software-Foundation/message.fullstack.cash"
   },
   "bugs": {
-    "url": "https://github.com/Permissionless-Software-Foundation/bch-wallet-starter/issues"
+    "url": "https://github.com/Permissionless-Software-Foundation/message.fullstack.cash/issues"
   },
   "devDependencies": {
     "semantic-release": "^17.1.1",
