@@ -19,9 +19,16 @@
     "test": "npm run lint"
   },
   "dependencies": {
+    "@material-ui/core": "^4.11.0",
+    "@uppy/core": "^1.13.1",
+    "@uppy/dashboard": "^1.12.5",
+    "@uppy/react": "^1.10.5",
+    "@uppy/tus": "^1.7.5",
     "gatsby": "^2.23.7",
     "gatsby-ipfs-web-wallet": "^1.9.8",
-    "gatsby-plugin-bch-tx-history": "^1.1.0"
+    "gatsby-plugin-bch-tx-history": "^1.1.0",
+    "qrcode.react": "^1.0.0",
+    "react-notifications-component": "^2.4.0"
   },
   "repository": {
     "type": "git",

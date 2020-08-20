@@ -1,39 +1,31 @@
-/*
-  This is a demonstration component. It helps to show how you can create new
-  menu items and Views in your own BCH web wallet dashboard app.
-
-  This file controls the View (the part on the right side of the dashboard) of
-  the component. The menu item is controlled by the menu-components.js file.
-*/
-
 import React from 'react'
-import { Row, Col, Content, Box, Button } from 'adminlte-2-react'
+import Helmet from 'react-helmet'
+// import Banner from '../components/Banner'
+import UploadForm from './upload-form'
+import About from './about'
 
-class DemoComponent extends React.Component {
+import ReactNotification from 'react-notifications-component'
+import 'react-notifications-component/dist/theme.css'
+
+import './upload.css'
+
+class Upload extends React.Component {
   render () {
     return (
-      <Content
-        title='Demo Component'
-        subTitle='Getting started with adminlte-2-react'
-        browserTitle='Demo Component'
-      >
-        <Row>
-          <Col xs={12}>
-            <Box
-              title='A Box'
-              type='primary'
-              closable
-              collapsable
-              footer={<Button type='danger' text='Danger Button' />}
-            >
-              This is the View portion of the Demo Component. This view is
-              controlled by the src/demo-component/index.js file.
-            </Box>
-          </Col>
-        </Row>
-      </Content>
+      <div>
+        <ReactNotification />
+        <Helmet
+          title='IPFS File Hosting for BCH | FullStack.cash'
+          meta={[
+            { name: 'description', content: 'Pay BCH to have your files host on IPFS' },
+            { name: 'keywords', content: 'ipfs, bch, bitcoin, bitcoin cash, file, hosting, upload' }
+          ]}
+        />
+        <UploadForm />
+        <About />
+
+      </div>
     )
   }
 }
-
-export default DemoComponent
+export default Upload
