@@ -1,0 +1,87 @@
+
+/* qr.js styles */
+
+.qr-container{
+    margin-top: 50px;
+    text-align: center;
+    padding: 0.5em
+}
+
+.host-container{
+    margin-bottom: 40px;
+}
+.addr-container{
+    margin-top: 25px;
+    
+}
+.host-container h5{
+    margin-bottom: 0px;
+}
+.status-container{
+    width: 100%;
+    text-align: center;
+    margin-top: 0.5rem;
+    word-break: break-all
+
+}
+.fa-check-circle{
+    color: green;
+    font-size: 40px;
+}
+.cloud-link{
+    cursor: pointer;
+    text-align: center;
+    font-weight:700;
+    text-decoration: underline white; 
+}
+.status-msg{
+    margin-bottom: 0.7rem;
+}
+
+/* upload-form.js styles*/
+
+.uppy-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 2em;
+}
+.uppy-container .uppy-dashboard{
+    max-width: 100%;
+}
+.uppy-container .uppy-dashboard .uppy-Dashboard-browse{
+    height: auto;
+}
+.uppy-container .uppy-buttons{
+    display: flex;
+    justify-content: center;
+    
+ }
+.uppy-container .uppy-buttons button{
+   margin: 1em;
+   width: 100px;
+   
+}
+.uppy-Dashboard-inner {
+    max-height: 350px !important;
+}
+.uppy-Dashboard-dropFilesTitle {
+    font-size: 20px !important;
+}
+.uppy-Dashboard-progressindicators {
+    display: none !important;
+}
+.uppy-progress{
+    display: flex;
+    justify-content: center;
+    margin: 1em;
+}
+
+.MuiCircularProgress-svg{
+    color: var(--main-color)
+}
+/*Notification bug*/
+.notification-container-top-right{
+    right: 240px!important;
+}
