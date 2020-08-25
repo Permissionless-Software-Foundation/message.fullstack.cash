@@ -2,14 +2,13 @@ import React from 'react'
 import Helmet from 'react-helmet'
 // import Banner from '../components/Banner'
 import UploadForm from './upload-form'
-import About from './about'
 
 import ReactNotification from 'react-notifications-component'
 import 'react-notifications-component/dist/theme.css'
 
 import './upload.css'
 
-class Upload extends React.Component {
+class FileUpload extends React.Component {
   render () {
     return (
       <div>
@@ -22,10 +21,8 @@ class Upload extends React.Component {
           ]}
         />
         <UploadForm />
-        <About />
-
       </div>
     )
   }
 }
-export default Upload
+export default FileUpload

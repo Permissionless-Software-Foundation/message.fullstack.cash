@@ -8,17 +8,15 @@
 
 import React from 'react'
 import { Sidebar } from 'adminlte-2-react'
-import DemoComponent from '../../demo-component'
+import FileUpload from '../../file-upload'
 
 const { Item } = Sidebar
 
 const MenuComponents = [
   {
-    key: 'Demo Component',
-    component: <DemoComponent key='Demo Component' />,
-    menuItem: (
-      <Item icon='fas-cog' key='Demo Component' text='Demo Component' />
-    )
+    key: 'File Upload',
+    component: <FileUpload key='File Upload' />,
+    menuItem: <Item icon='fas-file-upload' key='File Upload' text='File Upload' />
   }
 ]
 
