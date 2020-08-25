@@ -15,8 +15,10 @@ const { Item } = Sidebar
 const MenuComponents = [
   {
     key: 'Demo Component',
-    component: <DemoComponent />,
-    menuItem: <Item icon='fas-cog' key='Demo Component' text='Demo Component' />
+    component: <DemoComponent key='Demo Component' />,
+    menuItem: (
+      <Item icon='fas-cog' key='Demo Component' text='Demo Component' />
+    )
   }
 ]
 
