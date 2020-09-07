@@ -28,8 +28,8 @@ import '@uppy/dashboard/dist/style.css'
 
 //const methods = [containsWhiteSpace, isNotInRange]
 
-// const SERVER = process.env.GATSBY_API_URL
-const SERVER = 'http://localhost:5001'
+const SERVER = process.env.SERVER
+
 let _this
 let uppy
 
