@@ -10,6 +10,8 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import NOTIFICATION from './notification'
 const Notification = new NOTIFICATION()
 
+const EncryptLib = typeof window !== 'undefined' ? window.BchEncryption : null
+
 let _this
 
 class MessagesForm extends React.Component {
@@ -24,6 +26,7 @@ class MessagesForm extends React.Component {
       message: ''
     }
 
+    _this.EncryptLib = EncryptLib
 
   }
 
@@ -131,6 +134,18 @@ class MessagesForm extends React.Component {
     }
 
   }
+  componentDidMount(){
+    try {
+      console.log(` Encrypt Lib ${_this.EncryptLib}`)
+      const encryptLib = new _this.EncryptLib()
+      console.log(encryptLib)
+    } catch (error) {
+      console.error(error)
+    }
+
+  }
 
 }
+
+
 export default MessagesForm
