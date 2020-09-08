@@ -8,6 +8,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 const QRCode = require('qrcode.react')
 const cloudUrl = 'https://gateway.temporal.cloud/ipfs/'
 
+const SERVER = process.env.SERVER
+
 let _this
 
 class QrCode extends React.Component {
@@ -67,7 +69,7 @@ class QrCode extends React.Component {
 
               {
                 _this.state.startedLoop &&
-                <div className="status-container col-12" style={{ backgroundColor: '#d6d6e1', padding: '25px' }}>
+                <div className="status-container col-12" style={_this.state.hash ? { backgroundColor: 'white' }:{ backgroundColor: 'white'}}>
                   {/* Show progress or check icon*/}
                   {!_this.state.hash ?
                     <CircularProgress className="main-color" /> :
