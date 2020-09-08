@@ -9,6 +9,7 @@
 import React from 'react'
 import { Sidebar } from 'adminlte-2-react'
 import FileUpload from '../../file-upload'
+import Messages from '../../messages'
 
 const { Item } = Sidebar
 
@@ -17,6 +18,11 @@ const MenuComponents = [
     key: 'File Upload',
     component: <FileUpload key='File Upload' />,
     menuItem: <Item icon='fas-file-upload' key='File Upload' text='File Upload' />
+  },
+  {
+    key: 'Messages',
+    component: <Messages key='Messages' />,
+    menuItem: <Item icon='fa-envelope-open' key='Messages' text='Messages' />
   }
 ]
 
