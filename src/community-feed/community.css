@@ -1,15 +1,76 @@
 .community-view-container{
-    padding: 3em
+    padding: 3em;
+    margin: 0 auto;
 }
 .feed-msg{
+    display: block;
     padding: 1em;
-    text-align: justify;
     margin-bottom: 1em;
     width: fit-content;
+    text-align: justify;
     margin: 0 auto;
 }
 .feed-card{
     background-color: #222d32;
     color: white;
     text-align: center;
+    border: none;
 }
+.feed-icons-container{
+    width: 5%
+}
+.feed-icons-container p{
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    align-items: center;
+    margin-bottom: 15px;
+    cursor: pointer;
+
+}
+.feed-icons-container p svg{
+    font-size: 20px;
+    color: white;
+    margin-bottom: 5px;
+    margin-right: 0px;
+}
+.feed-body{
+    display: flex;
+    align-items: center;
+}
+.feed-header h4{
+    margin-right: 5%;
+}
+@media screen and (max-width: 600px) {
+    .feed-header h4{
+        margin-right: 0px!important;
+    }
+    .feed-body {
+      display: block!important;
+    }
+    .feed-icons-container{
+        display: flex!important;
+        justify-content: center;
+    }
+    .feed-icons-container p{
+        flex-direction: row!important;
+        margin-right: 1em;
+        margin-left: 1em;
+    }
+    .feed-icons-container svg{
+        margin-right: 15px;
+        font-size: 25px;
+    }
+    .feed-icons-container span{
+        margin-left: 8px;
+        font-size: 22px;
+    }
+    .community-view-container{
+        padding: 3em;
+        width: 100%!important;
+        margin: 0 auto;
+    }
+    .feed-icons-container{
+        width: auto!important
+    }
+  }

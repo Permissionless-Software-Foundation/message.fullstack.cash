@@ -15,7 +15,6 @@ export const getMessages = async () => {
     }
     const resp = await axios(options)
     const result = resp.data
-    console.log('resp', resp)
     if (resp.status === 200) {
       return result
     } else {

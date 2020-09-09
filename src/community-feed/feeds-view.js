@@ -9,50 +9,7 @@ import CircularProgress from '@material-ui/core/CircularProgress'
 import FeedCard from './feed-card'
 
 let _this
-const feedList = [
-  {
-    merit: 'merit1',
-    tokenAge: 'March 2020',
-    tokenBalance: 1.0,
-    sender: 'bitcoincash:qq5z2rqupzthfwt8ttyvfref0avgg7p46qu0q9g3z6',
-    text: 'is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s'
-  },
-  {
-    merit: 'merit2',
-    tokenAge: 'March 2020',
-    tokenBalance: 1.0,
-    sender: 'bitcoincash:qq5z2rqupzthfwt8ttyvfref0avgg7p46qu0q9g3z6',
-    text: 'is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s'
-  },
-  {
-    merit: 'merit3',
-    tokenAge: 'March 2020',
-    tokenBalance: 1.0,
-    sender: 'bitcoincash:qq5z2rqupzthfwt8ttyvfref0avgg7p46qu0q9g3z6',
-    text: 'is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s'
-  },
-  {
-    merit: 'merit4',
-    tokenAge: 'March 2020',
-    tokenBalance: 1.0,
-    sender: 'bitcoincash:qq5z2rqupzthfwt8ttyvfref0avgg7p46qu0q9g3z6',
-    text: 'is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500sis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500sis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500sis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500sis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500sis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500sis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500sis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500sis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500sis simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s'
-  },
-  {
-    merit: 'merit5',
-    tokenAge: 'March 2020',
-    tokenBalance: 1.0,
-    sender: 'bitcoincash:qq5z2rqupzthfwt8ttyvfref0avgg7p46qu0q9g3z6',
-    text: 'is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s'
-  },
-  {
-    merit: 'merit6',
-    tokenAge: 'March 2020',
-    tokenBalance: 1.0,
-    sender: 'bitcoincash:qq5z2rqupzthfwt8ttyvfref0avgg7p46qu0q9g3z6',
-    text: 'is simply dummy text of the printing and '
-  }
-]
+
 class FeedView extends React.Component {
   constructor(props) {
     super(props)
@@ -88,8 +45,13 @@ class FeedView extends React.Component {
   async handleMessages() {
     try {
       const resp = await getMessages()
+
+      if (!resp || !resp.messages) throw new Error('Error fetching messages')
+
+      const messages = resp.messages.reverse()
+
       _this.setState({
-        messages: feedList //resp.messages
+        messages: messages
       })
     } catch (error) {
       console.error(error)
