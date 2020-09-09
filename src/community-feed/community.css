@@ -1,0 +1,15 @@
+.community-view-container{
+    padding: 3em
+}
+.feed-msg{
+    padding: 1em;
+    text-align: justify;
+    margin-bottom: 1em;
+    width: fit-content;
+    margin: 0 auto;
+}
+.feed-card{
+    background-color: #222d32;
+    color: white;
+    text-align: center;
+}
