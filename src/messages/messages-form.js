@@ -43,7 +43,6 @@ class MessagesForm extends React.Component {
       bchWallet: '',
       hash: '',
       inFetch: false,
-      startedLoop: false
     }
 
     _this.EncryptLib = EncryptLib
@@ -51,7 +50,7 @@ class MessagesForm extends React.Component {
   }
 
   render() {
-    const { address, hash, inFetch, subject, message, startedLoop } = _this.state
+    const { address, hash, inFetch, subject, message } = _this.state
     return (
       <div>
         <Row>
@@ -94,9 +93,6 @@ class MessagesForm extends React.Component {
           </Col>
           <Col xs={12} className="text-center">
             {
-              startedLoop && <p>'Checking for payment...'</p>
-            }
-            {
               hash && <div>
                 <div>
                   <FontAwesomeIcon
@@ -116,7 +112,7 @@ class MessagesForm extends React.Component {
               />
             }
             {
-              (inFetch || startedLoop) &&
+              inFetch &&
               <CircularProgress className="main-color" />
             }
             {hash &&
@@ -133,9 +129,19 @@ class MessagesForm extends React.Component {
       </div>
     )
   }
+  handleUpdate(event) {
+    const name = event.target.name
+    const value = event.target.value
+    _this.setState(prevState => ({
+      ...prevState,
+      [name]: value,
+    }))
+  }
+
   // Submit message
   async handleSendMessage() {
     try {
+
       _this.setState({
         inFetch: true
       })
@@ -146,7 +152,17 @@ class MessagesForm extends React.Component {
 
       const fileUploaded = await _this.uploadFile({ address, subject, message }, "message.json")
 
-      await _this.checkHashLoop(fileUploaded.file._id)
+
+      const hash = await _this.checkHash(fileUploaded.file._id)
+
+      if (!hash) {
+        throw new Error('Error validating payment')
+      }
+
+      _this.setState({
+        inFetch: false,
+        hash
+      })
 
       _this.Notification.notify('Message Sent', 'Success!!', 'success')
 
@@ -199,47 +215,45 @@ class MessagesForm extends React.Component {
     }
   }
 
-  handleUpdate(event) {
-    const name = event.target.name
-    const value = event.target.value
-    _this.setState(prevState => ({
-      ...prevState,
-      [name]: value,
-    }))
-  }
-
-  // Payment verification loop
-  async checkHashLoop(fileId) {
-    let hash
-    _this.setState({
-      startedLoop: true
-    })
-    const myInterval = setInterval(async () => {
-      hash = await _this.checkHash(fileId)
-
-      if (hash) {
-        _this.setState({
-          hash: hash,
-          startedLoop: false,
-          inFetch: false
-        })
-        clearInterval(myInterval);
-      }
-    }, 10000);
-
-  }
-
-  // Verifies that the IPFS hash exists
   async checkHash(fileId) {
-    let hash = ''
-    const resultFile = await _this.getFileById(fileId)
 
-    const fileData = resultFile.file
-    if (fileData && fileData.payloadLink) {
-      hash = fileData.payloadLink
+    try {
+      let hash = ''
+      const resultFile = await _this.checkPayment(fileId)
+
+      const fileData = resultFile.file
+
+      if (fileData && fileData.payloadLink) {
+        hash = fileData.payloadLink
+
+      }
+
+      return hash
+    } catch (error) {
+      throw error
     }
+  }
+  // Check payment
+  async checkPayment(fileId) {
 
-    return hash
+    // Try to get  metadata by id
+    try {
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      }
+      const resp = await fetch(`${SERVER}/files/check/${fileId}`, options)
+
+      if (resp.ok) {
+        return resp.json()
+      } else {
+        return false
+      }
+    } catch (e) {
+      return false
+    }
   }
 
   resetValues() {
@@ -249,7 +263,6 @@ class MessagesForm extends React.Component {
       message: '',
       hash: '',
       inFetch: false,
-      startedLoop: false
     })
   }
 
@@ -281,35 +294,11 @@ class MessagesForm extends React.Component {
   // Life Cicle
   async componentDidMount() {
     try {
-      console.log("component did mount")
       await _this.instanceWallet()
     } catch (error) {
       console.error(error)
     }
 
-  }
-
-  // Get file by id
-  async getFileById(fileId) {
-
-    // Try to get  metadata by id
-    try {
-      const options = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      }
-      const resp = await fetch(`${SERVER}/files/${fileId}`, options)
-
-      if (resp.ok) {
-        return resp.json()
-      } else {
-        return false
-      }
-    } catch (e) {
-      return false
-    }
   }
 
   // Instance Wallet
