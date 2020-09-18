@@ -137,7 +137,24 @@ class MessagesForm extends React.Component {
       [name]: value,
     }))
   }
+  async handleSendMessage2() {
+    try {
 
+
+      const hash = await new Promise(resolve => setTimeout(async () => {
+        const hashResult = await _this.checkHash(fileUploaded.file._id)
+        resolve(hashResult)
+      }, 6000));
+
+      console.log("test")
+    } catch (error) {
+      console.error("Error", error.message)
+      _this.Notification.notify('Error', error.message, 'danger')
+      _this.setState({
+        inFetch: false
+      })
+    }
+  }
   // Submit message
   async handleSendMessage() {
     try {
@@ -152,8 +169,13 @@ class MessagesForm extends React.Component {
 
       const fileUploaded = await _this.uploadFile({ address, subject, message }, "message.json")
 
-
-      const hash = await _this.checkHash(fileUploaded.file._id)
+      // After the payment is done, this promise is used
+      // to validate the payment using a 6 second delay
+      // this time delay is used to assure the transaction
+      const hash = await new Promise(resolve => setTimeout(async () => {
+        const hashResult = await _this.checkHash(fileUploaded.file._id)
+        resolve(hashResult)
+      }, 6000));
 
       if (!hash) {
         throw new Error('Error validating payment')
@@ -264,6 +286,11 @@ class MessagesForm extends React.Component {
       hash: '',
       inFetch: false,
     })
+    
+    // Note: Trying to send a message for a second time will
+    // throw the 'uppy already has a file loaded' error
+    // instancing the wallet again will prevent this error
+    _this.instanceWallet()
   }
 
   // Validate entries
