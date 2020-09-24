@@ -16,6 +16,7 @@ class FeedView extends React.Component {
     _this = this
 
     this.state = {
+      inFetch: true,
       messages: []
     }
 
@@ -32,6 +33,17 @@ class FeedView extends React.Component {
               <FeedCard message={val} />
             </Col>
           })
+          }
+          {!_this.state.inFetch && !messages.length && (
+            <Box padding='true' className='container-nofound'>
+              <Row>
+                <Col xs={12}>
+                  <em>
+                    There's no messages in the community feed
+                    </em>
+                </Col>
+              </Row>
+            </Box>)
           }
         </Row>
       </div>
@@ -51,10 +63,14 @@ class FeedView extends React.Component {
       const messages = resp.messages.reverse()
 
       _this.setState({
-        messages: messages
+        messages: messages,
+        inFetch: false
       })
     } catch (error) {
       console.error(error)
+      _this.setState({
+        inFetch: false
+      })
     }
   }
 
