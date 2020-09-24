@@ -11,10 +11,10 @@
     margin: 0 auto;
 }
 .feed-card{
-    background-color: #222d32;
+    background-color: #222d32!important;
     color: white;
     text-align: center;
-    border: none;
+    border: none!important;
 }
 .feed-icons-container{
     width: 5%
