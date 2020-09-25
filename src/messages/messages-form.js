@@ -7,11 +7,11 @@ import { getWalletInfo } from 'gatsby-ipfs-web-wallet/src/components/localWallet
 import { Row, Col, Box, Inputs, Button } from 'adminlte-2-react'
 const { Text, Textarea } = Inputs
 
-
 import NOTIFICATION from './notification'
 const Notification = new NOTIFICATION()
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+
 
 const SERVER = process.env.SERVER
 
@@ -43,6 +43,7 @@ class MessagesForm extends React.Component {
       bchWallet: '',
       hash: '',
       inFetch: false,
+      encryptLib: ''
     }
 
     _this.EncryptLib = EncryptLib
@@ -137,24 +138,71 @@ class MessagesForm extends React.Component {
       [name]: value,
     }))
   }
-  async handleSendMessage2() {
+
+  // Instantiate encryption library
+  async instanceEncryption() {
     try {
 
+      const { bchWallet } = _this.state
 
-      const hash = await new Promise(resolve => setTimeout(async () => {
-        const hashResult = await _this.checkHash(fileUploaded.file._id)
-        resolve(hashResult)
-      }, 6000));
+      // The constructor of the encryption library needs a parameter,
+      // this parameter is the bchjs library
+      const BCHJS = bchWallet.BCHJS
+      const encryptLib = new EncryptLib(BCHJS)
 
-      console.log("test")
-    } catch (error) {
-      console.error("Error", error.message)
-      _this.Notification.notify('Error', error.message, 'danger')
+      // Overwrite the bchjs instance of the encryption library,
+      // for the bchjs instance of the client
+      encryptLib.bchjs = bchWallet.bchjs
+
       _this.setState({
-        inFetch: false
+        encryptLib
       })
+    } catch (error) {
+      console.error(error)
     }
   }
+
+  // Get public key from bch address
+  async getPubKey(address) {
+    try {
+      const { encryptLib } = _this.state
+      const pubKey = await encryptLib.getPubKey.queryBlockchain(address)
+
+      return pubKey
+    } catch (error) {
+      return false
+    }
+  }
+  // Decrypt a message 
+  async decryptMsg(privKey, encryptedMsg) {
+    try {
+      const { encryptLib } = _this.state
+
+      const decryptedHex = await encryptLib.encryption.decryptFile(privKey, encryptedMsg)
+      const decryptedBuff = Buffer.from(decryptedHex, 'hex')
+      const decryptedMsg = decryptedBuff.toString()
+      return decryptedMsg
+    } catch (error) {
+      throw error
+    }
+  }
+  // Encrypt a message 
+  async encryptMsg(pubKey, msg) {
+    try {
+      const { encryptLib } = _this.state
+
+      const buff = Buffer.from(msg)
+      const hex = buff.toString('hex')
+      const encryptedMsg = await encryptLib.encryption.encryptFile(pubKey, hex)
+
+      return encryptedMsg
+
+    } catch (error) {
+      throw error
+    }
+  }
+
+
   // Submit message
   async handleSendMessage() {
     try {
@@ -167,7 +215,18 @@ class MessagesForm extends React.Component {
 
       _this.validateInputs()
 
-      const fileUploaded = await _this.uploadFile({ address, subject, message }, "message.json")
+      // Get public key from bch address
+      const pubKey = await _this.getPubKey(address)
+
+      if (!pubKey) {
+        throw new Error('This bch address does not have a public key')
+      }
+
+      // Encrypt Message 
+      const encryptedMsg = await _this.encryptMsg(pubKey, message)
+
+      // Uploading message
+      const fileUploaded = await _this.uploadFile({ address, subject, message: encryptedMsg }, "message.json")
 
       // After the payment is done, this promise is used
       // to validate the payment using a 6 second delay
@@ -189,7 +248,7 @@ class MessagesForm extends React.Component {
       _this.Notification.notify('Message Sent', 'Success!!', 'success')
 
     } catch (error) {
-      console.error("Error", error.message)
+      console.error("Error", error)
       _this.Notification.notify('Error', error.message, 'danger')
       _this.setState({
         inFetch: false
@@ -286,7 +345,7 @@ class MessagesForm extends React.Component {
       hash: '',
       inFetch: false,
     })
-    
+
     // Note: Trying to send a message for a second time will
     // throw the 'uppy already has a file loaded' error
     // instancing the wallet again will prevent this error
@@ -317,11 +376,11 @@ class MessagesForm extends React.Component {
     }
 
   }
-
   // Life Cicle
   async componentDidMount() {
     try {
       await _this.instanceWallet()
+      await _this.instanceEncryption()
     } catch (error) {
       console.error(error)
     }
