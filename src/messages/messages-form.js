@@ -43,7 +43,9 @@ class MessagesForm extends React.Component {
       bchWallet: '',
       hash: '',
       inFetch: false,
-      encryptLib: ''
+      encryptLib: '',
+      walletInfo: '',
+      txId: ''
     }
 
     _this.EncryptLib = EncryptLib
@@ -51,7 +53,14 @@ class MessagesForm extends React.Component {
   }
 
   render() {
-    const { address, hash, inFetch, subject, message } = _this.state
+    const {
+      address,
+      hash,
+      inFetch,
+      subject,
+      message,
+      txId
+    } = _this.state
     return (
       <div>
         <Row>
@@ -101,8 +110,23 @@ class MessagesForm extends React.Component {
                     size='xs'
                     icon='check-circle' />
                 </div>
+                <div>
+                  IPFS HASH:
                 <a href={`${cloudUrl}/${hash}`} target="_blank">{hash}</a>
+                </div>
               </div>
+            }
+            {txId && (
+              <div className="mt-1">
+                Transaction ID:
+                <a
+                  href={`https://explorer.bitcoin.com/bch/tx/${txId}`}
+                  target="_blank" >
+                  {txId}
+                </a>
+              </div>
+
+            )
             }
             {(!hash && !inFetch) &&
               <Button
@@ -118,12 +142,13 @@ class MessagesForm extends React.Component {
             }
             {hash &&
               <Button
-                className="send-btn mt-1"
+                className="send-btn mt-1 "
                 type="primary"
                 text="Reset"
                 onClick={this.resetValues}
               />
             }
+
 
           </Col>
         </Row>
@@ -217,6 +242,7 @@ class MessagesForm extends React.Component {
 
       // Get public key from bch address
       const pubKey = await _this.getPubKey(address)
+      console.log(`Publick key : ${pubKey}`)
 
       if (!pubKey) {
         throw new Error('This bch address does not have a public key')
@@ -240,9 +266,12 @@ class MessagesForm extends React.Component {
         throw new Error('Error validating payment')
       }
 
+      const txId = await _this.signalMessage(hash, address, subject)
+
       _this.setState({
         inFetch: false,
-        hash
+        hash,
+        txId
       })
 
       _this.Notification.notify('Message Sent', 'Success!!', 'success')
@@ -343,6 +372,7 @@ class MessagesForm extends React.Component {
       subject: '',
       message: '',
       hash: '',
+      txId: '',
       inFetch: false,
     })
 
@@ -412,13 +442,109 @@ class MessagesForm extends React.Component {
       bchWalletLib.tokens.sendBch.bchjs = new bchWalletLib.BCHJS(bchjsOptions)
       bchWalletLib.tokens.utxos.bchjs = new bchWalletLib.BCHJS(bchjsOptions)
       _this.setState({
-        bchWallet: bchWalletLib
+        bchWallet: bchWalletLib,
+        walletInfo: localStorageInfo
       })
 
       return bchWalletLib
     } catch (error) {
       console.error(error)
     }
+  }
+
+  async signalMessage(ipfsHash, toAddr, subject) {
+    try {
+      const { bchWallet, walletInfo } = _this.state
+      const bchjs = bchWallet.bchjs
+      const sendAddr = walletInfo.cashAddress
+      const ecPair = bchjs.ECPair.fromWIF(walletInfo.privateKey)
+
+      // Pick a UTXO controlled by this address.
+      const utxos = await bchjs.Electrumx.utxo(sendAddr)
+      // console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
+
+      if (!utxos.success) throw new Error("Could not get UTXOs")
+
+      const utxo = _this.findBiggestUtxo(utxos.utxos)
+      // console.log(`utxo: ${JSON.stringify(utxo, null, 2)}`)
+
+      // instance of transaction builder
+      const transactionBuilder = new bchjs.TransactionBuilder()
+
+      // const satoshisToSend = SATOSHIS_TO_SEND
+      const originalAmount = utxo.value
+      const vout = utxo.tx_pos
+      const txid = utxo.tx_hash
+
+      // add input with txid and index of vout
+      transactionBuilder.addInput(txid, vout)
+
+      // TODO: Compute the 1 sat/byte fee.
+      const fee = 500
+      const dust = 546
+
+      // Send the UTXO back to yourself, less the fee and dust.
+      transactionBuilder.addOutput(sendAddr, originalAmount - fee - dust)
+
+      // Add the memo.cash OP_RETURN to the transaction.
+      // This contains the IPFS hash needed to download the message.
+      const script = [
+        bchjs.Script.opcodes.OP_RETURN,
+        Buffer.from("6d02", "hex"),
+        Buffer.from(`MSG IPFS ${ipfsHash} ${subject}`)
+      ]
+
+      // console.log(`script: ${util.inspect(script)}`);
+      const data = bchjs.Script.encode(script)
+      // console.log(`data: ${util.inspect(data)}`);
+      transactionBuilder.addOutput(data, 0)
+
+      // Send a dust amount to the recipient to signal to them that they have a message.
+      transactionBuilder.addOutput(toAddr, dust)
+
+      // Sign the transaction with the HD node.
+      let redeemScript
+      transactionBuilder.sign(
+        0,
+        ecPair,
+        redeemScript,
+        transactionBuilder.hashTypes.SIGHASH_ALL,
+        originalAmount
+      )
+
+      // build tx
+      const tx = transactionBuilder.build()
+      // output rawhex
+      const hex = tx.toHex()
+
+      if (!hex || typeof hex !== 'string') {
+        throw new Error('hex must be a string')
+      }
+      const txidStr = await bchjs.RawTransactions.sendRawTransaction(hex)
+
+      return txidStr
+    } catch (err) {
+      console.error(`Error in signalMessage()`)
+      throw err
+    }
+  }
+  // Returns the utxo with the biggest balance from an array of utxos.
+  findBiggestUtxo(utxos) {
+    let largestAmount = 0
+    let largestIndex = 0
+
+    for (var i = 0; i < utxos.length; i++) {
+      const thisUtxo = utxos[i]
+
+      if (thisUtxo.value > largestAmount) {
+        largestAmount = thisUtxo.value
+        largestIndex = i
+      }
+    }
+
+    // console.log(`Largest UTXO: ${JSON.stringify(utxos[largestIndex], null, 2)}`)
+
+    return utxos[largestIndex]
   }
 
 }
