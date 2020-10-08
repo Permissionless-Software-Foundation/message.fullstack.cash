@@ -22,10 +22,10 @@
 .feed-icons-container p{
     display: flex;
     flex-direction: column;
-    width: fit-content;
     align-items: center;
     margin-bottom: 15px;
     cursor: pointer;
+    width: 100%!important;
 
 }
 .feed-icons-container p svg{
@@ -40,6 +40,9 @@
 }
 .feed-header h4{
     margin-right: 5%;
+}
+.community-view-container-box{
+    min-height: calc(100vh - var(--footer-height));
 }
 @media screen and (max-width: 600px) {
     .feed-header h4{
