@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 import { getMessages } from './services'
 import { Row, Col, Box, Inputs, Button } from 'adminlte-2-react'
 const { Text, Textarea } = Inputs
+import Spinner from 'gatsby-ipfs-web-wallet/src/images/loader.gif'
 
 import CircularProgress from '@material-ui/core/CircularProgress'
 import FeedCard from './feed-card'
@@ -26,32 +27,37 @@ class FeedView extends React.Component {
   render() {
     const { messages } = _this.state
     return (
-      <div className="community-view-container">
-        <Row>
-          {messages.map((val, i) => {
-            return <Col xs={12} key={`feed-${i}`} className="mb-1">
-              <FeedCard message={val} />
-            </Col>
-          })
-          }
-          {!_this.state.inFetch && !messages.length && (
-            <Box padding='true' className='container-nofound'>
-              <Row>
-                <Col xs={12}>
-                  <em>
-                    There's no messages in the community feed
-                    </em>
+      <>
+        {_this.state.inFetch && <div className='spinner'>
+          <img alt='Loading...' src={Spinner} width={100} />
+        </div>}
+        {!_this.state.inFetch && <div className="community-view-container">
+          <Row>
+            {
+              messages.map((val, i) => {
+               return <Col xs={12} key={`feed-${i}`} className="mb-1">
+                  <FeedCard message={val} />
                 </Col>
-              </Row>
-            </Box>)
-          }
-        </Row>
-      </div>
+              })
+            }
+            {!messages.length && (
+              <Box padding='true' className='container-nofound'>
+                <Row>
+                  <Col xs={12}>
+                    <em>
+                      There's no messages in the community feed
+                    </em>
+                  </Col>
+                </Row>
+              </Box>)
+            }
+          </Row>
+        </div>}
+      </>
     )
   }
 
   async componentDidMount() {
-
     await _this.handleMessages()
   }
   async handleMessages() {
@@ -61,7 +67,6 @@ class FeedView extends React.Component {
       if (!resp || !resp.messages) throw new Error('Error fetching messages')
 
       const messages = resp.messages.reverse()
-
       _this.setState({
         messages: messages,
         inFetch: false

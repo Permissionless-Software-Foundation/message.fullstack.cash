@@ -17,6 +17,9 @@ class FeedCard extends React.Component {
   render() {
     const { message } = _this.props
     const { merit, tokenAge, tokenBalance, sender, text } = message
+    const fixedMerit = parseFloat(merit).toFixed(0)
+    const fixedBalance = parseFloat(tokenBalance).toFixed(0)
+    const fixedAge = parseFloat(tokenAge).toFixed(0)
     return (
       <div >
         {
@@ -42,7 +45,7 @@ class FeedCard extends React.Component {
                           size='xs'
                           icon='coins'
                         />
-                        <span>{tokenBalance}</span>
+                        <span>{fixedBalance}</span>
 
                       </p>
                       <p data-toggle="tooltip" data-placement="top" title="Token Age">
@@ -51,7 +54,7 @@ class FeedCard extends React.Component {
                           size='xs'
                           icon='hourglass-end'
                         />
-                        <span>{tokenAge}</span>
+                        <span>{fixedAge}</span>
 
                       </p>
                       <p data-toggle="tooltip" data-placement="top" title="Merit">
@@ -60,7 +63,7 @@ class FeedCard extends React.Component {
                           size='xs'
                           icon='medal'
                         />
-                        <span>{merit}</span>
+                        <span>{fixedMerit}</span>
 
                       </p>
                     </div>
@@ -77,6 +80,10 @@ class FeedCard extends React.Component {
   }
 
   async componentDidMount() { }
+
+  shouldComponentUpdate() {
+    return false
+  }
 }
 FeedCard.propTypes = {
   message: PropTypes.object.isRequired,
