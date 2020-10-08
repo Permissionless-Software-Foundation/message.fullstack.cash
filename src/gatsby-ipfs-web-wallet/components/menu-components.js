@@ -15,27 +15,30 @@ import CommunityFeed from '../../community-feed'
 const { Item } = Sidebar
 
 const MenuComponents2 = props => {
-  const DefualtsMenu = MenuComponents(props)
+  const DefaultMenu = MenuComponents(props)
 
   const menu = [
     {
       active: true,
       key: 'Community Feed',
-      component: <CommunityFeed key='Community Feed' />,
-      menuItem: <Item icon='fa-users' key='Community Feed' text='Community Feed' />
-    },
-    ...DefualtsMenu,
-    {
-      key: 'File Upload',
-      component: <FileUpload key='File Upload' />,
-      menuItem: <Item icon='fas-file-upload' key='File Upload' text='File Upload' />
+      component: <CommunityFeed key="Community Feed" />,
+      menuItem: (
+        <Item icon="fa-users" key="Community Feed" text="Community Feed" />
+      )
     },
     {
       key: 'Messages',
-      component: <Messages key='Messages' />,
-      menuItem: <Item icon='fa-envelope-open' key='Messages' text='Messages' />
+      component: <Messages key="Messages" />,
+      menuItem: <Item icon="fa-envelope-open" key="Messages" text="Messages" />
+    },
+    ...DefaultMenu,
+    {
+      key: 'File Upload',
+      component: <FileUpload key="File Upload" />,
+      menuItem: (
+        <Item icon="fas-file-upload" key="File Upload" text="File Upload" />
+      )
     }
-
   ]
   return menu
 }
