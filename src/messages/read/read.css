@@ -1,0 +1,75 @@
+#message-card{
+    margin-top: 5em;
+    padding-top: 3em;
+}
+.inbox-header{
+    display: flex;
+    justify-content: space-between;
+}
+.inbox-inputs{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1em;
+}
+td{
+    height: 50px;
+    font-size: 2em;
+}
+tr:nth-child(even) {background:  rgb(255, 255, 255)}
+tr:nth-child(odd) {background: rgb(245, 255, 255)}
+
+.inbox-sender{
+    cursor: pointer;
+}
+.mail-message{
+    padding: 1em;
+    text-align: justify;
+}
+.mail-card , .inbox-card{
+    min-height: calc(100vh - var(--footer-height) - 50px);
+}
+
+.inbox-header , .mail-card{
+    font-size: 20px;
+}
+.mail-sub-header > .mail-info{
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+}
+.mail-sub-header > .mail-info > span{
+    color: #999;
+    font-size: 13px;
+}
+.mail-sub-header > .mail-info > p{
+
+    font-size: 16px;
+}
+.inbox-search{
+    width: 30%;
+}
+.pagination-info{
+    margin-right: 1em;
+    font-size: 18px;
+}
+.mail-footer{
+    display: flex;
+    justify-content: space-between;
+}
+
+/*-responsive */
+@media (max-width: 600px) {
+    .inbox-search{
+        width: 60%;
+    }
+    .inbox-control >button , .inbox-pagination >button ,.pagination-info{
+        font-size: 10px!important;
+    }
+
+    .box{
+        width: 100vw!important;
+    }
+    .message-container{
+        padding: 0!important
+    }
+  }

@@ -6,8 +6,8 @@ import MessagesForm from './messages-form'
 import ReactNotification from 'react-notifications-component'
 import 'react-notifications-component/dist/theme.css'
 
-import './message.css'
-class Message extends React.Component {
+import './send.css'
+class SendMessage extends React.Component {
   render () {
     return (
       <div className='message-container'>
@@ -25,4 +25,4 @@ class Message extends React.Component {
     )
   }
 }
-export default Message
+export default SendMessage

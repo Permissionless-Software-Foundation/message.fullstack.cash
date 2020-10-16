@@ -7,7 +7,7 @@ import { getWalletInfo } from 'gatsby-ipfs-web-wallet/src/components/localWallet
 import { Row, Col, Box, Inputs, Button } from 'adminlte-2-react'
 const { Text, Textarea } = Inputs
 
-import NOTIFICATION from './notification'
+import NOTIFICATION from '../notification'
 const Notification = new NOTIFICATION()
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
