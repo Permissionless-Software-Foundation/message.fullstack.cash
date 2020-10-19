@@ -4,8 +4,8 @@
 */
 
 const config = {
-  title: 'Wallet Demo',
-  titleShort: 'Demo',
+  title: 'Secure Messaging',
+  titleShort: 'MSG',
   balanceText: 'BCH Balance',
   balanceIcon: 'fab-bitcoin'
 }

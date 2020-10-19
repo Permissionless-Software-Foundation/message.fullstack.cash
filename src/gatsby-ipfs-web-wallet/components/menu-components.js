@@ -23,29 +23,37 @@ const MenuComponents2 = props => {
     {
       active: true,
       key: 'Community Feed',
-      component: <CommunityFeed key='Community Feed' />,
+      component: <CommunityFeed key="Community Feed" />,
       menuItem: (
-        <Item icon='fa-users' key='Community Feed' text='Community Feed' />
+        <Item icon="fa-users" key="Community Feed" text="Community Feed" />
       )
     },
     {
       key: 'Send Message',
-      component: <SendMessage key='Send Message' />,
-      menuItem: <Item icon='fa-envelope-open' key='Send Message' text='Send Message' />
+      component: <SendMessage key="Send Message" />,
+      menuItem: (
+        <Item icon="fa-envelope-open" key="Send Message" text="Send Message" />
+      )
     },
     {
       key: 'Read Messages',
-      component: <ReadMessages key='Read Messages' />,
-      menuItem: <Item icon='fa-envelope-open' key='Read Messages' text='Read Messages' />
+      component: <ReadMessages key="Read Messages" />,
+      menuItem: (
+        <Item
+          icon="fa-envelope-open"
+          key="Read Messages"
+          text="Read Messages"
+        />
+      )
     },
-    ...DefaultMenu,
     {
       key: 'File Upload',
-      component: <FileUpload key='File Upload' />,
+      component: <FileUpload key="File Upload" />,
       menuItem: (
-        <Item icon='fas-file-upload' key='File Upload' text='File Upload' />
+        <Item icon="fas-file-upload" key="File Upload" text="File Upload" />
       )
-    }
+    },
+    ...DefaultMenu
   ]
   return menu
 }
