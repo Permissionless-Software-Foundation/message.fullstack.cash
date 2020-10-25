@@ -155,6 +155,7 @@ class MessagesForm extends React.Component {
       </div>
     )
   }
+  
   handleUpdate(event) {
     const name = event.target.name
     const value = event.target.value
@@ -198,7 +199,7 @@ class MessagesForm extends React.Component {
       return false
     }
   }
-  // Decrypt a message 
+  // Decrypt a message
   async decryptMsg(privKey, encryptedMsg) {
     try {
       const { encryptLib } = _this.state
@@ -211,7 +212,7 @@ class MessagesForm extends React.Component {
       throw error
     }
   }
-  // Encrypt a message 
+  // Encrypt a message
   async encryptMsg(pubKey, msg) {
     try {
       const { encryptLib } = _this.state
@@ -248,7 +249,7 @@ class MessagesForm extends React.Component {
         throw new Error('This bch address does not have a public key')
       }
 
-      // Encrypt Message 
+      // Encrypt Message
       const encryptedMsg = await _this.encryptMsg(pubKey, message)
 
       // Uploading message

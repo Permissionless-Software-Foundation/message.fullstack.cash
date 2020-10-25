@@ -8,7 +8,7 @@ export const getMessages = async () => {
   try {
     const options = {
       method: 'GET',
-      url: 'https://community-api.fullstack.cash/messages',
+      url: `${process.env.COMMUNITY_API}/messages`,
       headers: {
         'Content-Type': 'application/json'
       }
