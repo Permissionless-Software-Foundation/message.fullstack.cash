@@ -21,6 +21,9 @@ export default function HTML (props) {
         {/* bch-encrypt-lib */}
         <script src='https://unpkg.com/bch-encrypt-lib' />
 
+        {/* bch-message-lib */}
+        <script src='https://unpkg.com/bch-message-lib' />
+
         {props.headComponents}
       </head>
       <body {...props.bodyAttributes}>
