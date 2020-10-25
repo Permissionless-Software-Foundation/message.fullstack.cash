@@ -12,18 +12,13 @@ const Notification = new NOTIFICATION()
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-
 const SERVER = process.env.SERVER
 
-const EncryptLib =
-  typeof window !== 'undefined' ?
-    window.BchEncryption :
-    null
+const EncryptLib = typeof window !== 'undefined' ? window.BchEncryption : null
 
-const BchWallet =
-  typeof window !== 'undefined'
-    ? window.SlpWallet
-    : null
+const BchWallet = typeof window !== 'undefined' ? window.SlpWallet : null
+
+const BchMessage = typeof window !== 'undefined' ? window.BchMessage : null
 
 const cloudUrl = 'https://gateway.temporal.cloud/ipfs/'
 
@@ -32,7 +27,7 @@ let _this
 class MessagesForm extends React.Component {
   constructor(props) {
     super(props)
-    console.log("props", props)
+    console.log('props', props)
     _this = this
     this.Notification = Notification
 
@@ -53,14 +48,7 @@ class MessagesForm extends React.Component {
   }
 
   render() {
-    const {
-      address,
-      hash,
-      inFetch,
-      subject,
-      message,
-      txId
-    } = _this.state
+    const { address, hash, inFetch, subject, message, txId } = _this.state
     return (
       <div>
         <Row>
@@ -102,73 +90,69 @@ class MessagesForm extends React.Component {
             />
           </Col>
           <Col xs={12} className="text-center">
-            {
-              hash && <div>
+            {hash && (
+              <div>
                 <div>
                   <FontAwesomeIcon
-                    className='title-icon mb-1 mt-1'
-                    size='xs'
-                    icon='check-circle' />
+                    className="title-icon mb-1 mt-1"
+                    size="xs"
+                    icon="check-circle"
+                  />
                 </div>
                 <div>
                   IPFS HASH:
-                <a href={`${cloudUrl}/${hash}`} target="_blank">{hash}</a>
+                  <a href={`${cloudUrl}/${hash}`} target="_blank">
+                    {hash}
+                  </a>
                 </div>
               </div>
-            }
+            )}
             {txId && (
               <div className="mt-1">
                 Transaction ID:
                 <a
                   href={`https://explorer.bitcoin.com/bch/tx/${txId}`}
-                  target="_blank" >
+                  target="_blank"
+                >
                   {txId}
                 </a>
               </div>
-
-            )
-            }
-            {(!hash && !inFetch) &&
+            )}
+            {!hash && !inFetch && (
               <Button
                 className="send-btn"
                 type="primary"
                 text="Send"
                 onClick={this.handleSendMessage}
               />
-            }
-            {
-              inFetch &&
-              <CircularProgress className="main-color" />
-            }
-            {hash &&
+            )}
+            {inFetch && <CircularProgress className="main-color" />}
+            {hash && (
               <Button
                 className="send-btn mt-1 "
                 type="primary"
                 text="Reset"
                 onClick={this.resetValues}
               />
-            }
-
-
+            )}
           </Col>
         </Row>
       </div>
     )
   }
-  
+
   handleUpdate(event) {
     const name = event.target.name
     const value = event.target.value
     _this.setState(prevState => ({
       ...prevState,
-      [name]: value,
+      [name]: value
     }))
   }
 
   // Instantiate encryption library
   async instanceEncryption() {
     try {
-
       const { bchWallet } = _this.state
 
       // The constructor of the encryption library needs a parameter,
@@ -204,7 +188,10 @@ class MessagesForm extends React.Component {
     try {
       const { encryptLib } = _this.state
 
-      const decryptedHex = await encryptLib.encryption.decryptFile(privKey, encryptedMsg)
+      const decryptedHex = await encryptLib.encryption.decryptFile(
+        privKey,
+        encryptedMsg
+      )
       const decryptedBuff = Buffer.from(decryptedHex, 'hex')
       const decryptedMsg = decryptedBuff.toString()
       return decryptedMsg
@@ -222,17 +209,14 @@ class MessagesForm extends React.Component {
       const encryptedMsg = await encryptLib.encryption.encryptFile(pubKey, hex)
 
       return encryptedMsg
-
     } catch (error) {
       throw error
     }
   }
 
-
   // Submit message
   async handleSendMessage() {
     try {
-
       _this.setState({
         inFetch: true
       })
@@ -253,15 +237,20 @@ class MessagesForm extends React.Component {
       const encryptedMsg = await _this.encryptMsg(pubKey, message)
 
       // Uploading message
-      const fileUploaded = await _this.uploadFile({ address, subject, message: encryptedMsg }, "message.json")
+      const fileUploaded = await _this.uploadFile(
+        { address, subject, message: encryptedMsg },
+        'message.json'
+      )
 
       // After the payment is done, this promise is used
       // to validate the payment using a 6 second delay
       // this time delay is used to assure the transaction
-      const hash = await new Promise(resolve => setTimeout(async () => {
-        const hashResult = await _this.checkHash(fileUploaded.file._id)
-        resolve(hashResult)
-      }, 6000));
+      const hash = await new Promise(resolve =>
+        setTimeout(async () => {
+          const hashResult = await _this.checkHash(fileUploaded.file._id)
+          resolve(hashResult)
+        }, 6000)
+      )
 
       if (!hash) {
         throw new Error('Error validating payment')
@@ -276,9 +265,8 @@ class MessagesForm extends React.Component {
       })
 
       _this.Notification.notify('Message Sent', 'Success!!', 'success')
-
     } catch (error) {
-      console.error("Error", error)
+      console.error('Error', error)
       _this.Notification.notify('Error', error.message, 'danger')
       _this.setState({
         inFetch: false
@@ -292,16 +280,18 @@ class MessagesForm extends React.Component {
 
       // Create Local File Object
       const content = [JSON.stringify(objectData)]
-      const options = { type: "application/json" }
+      const options = { type: 'application/json' }
       const file = new File(content, name, options)
 
       // Gets file model
-      const fileData = await bchWallet.bchjs.IPFS.createFileModelWeb(file);
+      const fileData = await bchWallet.bchjs.IPFS.createFileModelWeb(file)
       if (!fileData.success) throw new Error('Error creating file model')
 
-
       const fileModel = fileData.file
-      const uploadResult = await bchWallet.bchjs.IPFS.uploadFileWeb(file, fileModel._id)
+      const uploadResult = await bchWallet.bchjs.IPFS.uploadFileWeb(
+        file,
+        fileModel._id
+      )
 
       // Transaction data
       const receivers = [
@@ -319,7 +309,7 @@ class MessagesForm extends React.Component {
       await bchWallet.send(receivers)
 
       return {
-        file: fileData.file,
+        file: fileData.file
       }
     } catch (error) {
       throw error
@@ -327,7 +317,6 @@ class MessagesForm extends React.Component {
   }
 
   async checkHash(fileId) {
-
     try {
       let hash = ''
       const resultFile = await _this.checkPayment(fileId)
@@ -336,7 +325,6 @@ class MessagesForm extends React.Component {
 
       if (fileData && fileData.payloadLink) {
         hash = fileData.payloadLink
-
       }
 
       return hash
@@ -346,13 +334,12 @@ class MessagesForm extends React.Component {
   }
   // Check payment
   async checkPayment(fileId) {
-
     // Try to get  metadata by id
     try {
       const options = {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         }
       }
       const resp = await fetch(`${SERVER}/files/check/${fileId}`, options)
@@ -374,7 +361,7 @@ class MessagesForm extends React.Component {
       message: '',
       hash: '',
       txId: '',
-      inFetch: false,
+      inFetch: false
     })
 
     // Note: Trying to send a message for a second time will
@@ -388,7 +375,6 @@ class MessagesForm extends React.Component {
     try {
       const { address, subject, message } = _this.state
 
-
       if (!address) {
         throw new Error('Address is required')
       }
@@ -400,12 +386,9 @@ class MessagesForm extends React.Component {
       if (!message) {
         throw new Error('Message is required')
       }
-
-
     } catch (err) {
       throw err
     }
-
   }
   // Life Cicle
   async componentDidMount() {
@@ -415,13 +398,11 @@ class MessagesForm extends React.Component {
     } catch (error) {
       console.error(error)
     }
-
   }
 
   // Instance Wallet
   async instanceWallet() {
     try {
-
       const localStorageInfo = getWalletInfo()
 
       if (!localStorageInfo.mnemonic) return null
@@ -437,7 +418,10 @@ class MessagesForm extends React.Component {
         bchjsOptions.restURL = restURL
       }
 
-      const bchWalletLib = new _this.BchWallet(localStorageInfo.mnemonic, bchjsOptions)
+      const bchWalletLib = new _this.BchWallet(
+        localStorageInfo.mnemonic,
+        bchjsOptions
+      )
 
       // Update bchjs instances  of minimal-slp-wallet libraries
       bchWalletLib.tokens.sendBch.bchjs = new bchWalletLib.BCHJS(bchjsOptions)
@@ -464,7 +448,7 @@ class MessagesForm extends React.Component {
       const utxos = await bchjs.Electrumx.utxo(sendAddr)
       // console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
 
-      if (!utxos.success) throw new Error("Could not get UTXOs")
+      if (!utxos.success) throw new Error('Could not get UTXOs')
 
       const utxo = _this.findBiggestUtxo(utxos.utxos)
       // console.log(`utxo: ${JSON.stringify(utxo, null, 2)}`)
@@ -491,7 +475,7 @@ class MessagesForm extends React.Component {
       // This contains the IPFS hash needed to download the message.
       const script = [
         bchjs.Script.opcodes.OP_RETURN,
-        Buffer.from("6d02", "hex"),
+        Buffer.from('6d02', 'hex'),
         Buffer.from(`MSG IPFS ${ipfsHash} ${subject}`)
       ]
 
@@ -529,6 +513,7 @@ class MessagesForm extends React.Component {
       throw err
     }
   }
+  
   // Returns the utxo with the biggest balance from an array of utxos.
   findBiggestUtxo(utxos) {
     let largestAmount = 0
@@ -547,8 +532,6 @@ class MessagesForm extends React.Component {
 
     return utxos[largestIndex]
   }
-
 }
-
 
 export default MessagesForm
