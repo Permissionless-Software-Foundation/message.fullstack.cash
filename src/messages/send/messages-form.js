@@ -14,10 +14,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const SERVER = process.env.SERVER
 
+// bch-encrypt-lib
 const EncryptLib = typeof window !== 'undefined' ? window.BchEncryption : null
 
+// minimal-slp-wallet-web
 const BchWallet = typeof window !== 'undefined' ? window.SlpWallet : null
 
+// bch-message-lib
 const BchMessage = typeof window !== 'undefined' ? window.BchMessage : null
 
 const cloudUrl = 'https://gateway.temporal.cloud/ipfs/'
@@ -45,6 +48,7 @@ class MessagesForm extends React.Component {
 
     _this.EncryptLib = EncryptLib
     _this.BchWallet = BchWallet
+    _this.BchMessage = BchMessage
   }
 
   render() {
@@ -140,6 +144,16 @@ class MessagesForm extends React.Component {
       </div>
     )
   }
+  // Life Cicle
+  async componentDidMount() {
+    try {
+      await _this.instanceWallet() // Instantiate minimal-slp-wallet-web
+      await _this.instanceEncryption() // Instantiate bch-encrypt-lib
+      await _this.instanceMessagesLib() // Instantiate bch-message-lib
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   handleUpdate(event) {
     const name = event.target.name
@@ -149,7 +163,59 @@ class MessagesForm extends React.Component {
       [name]: value
     }))
   }
+  // Instance Wallet
+  async instanceWallet() {
+    try {
+      const localStorageInfo = getWalletInfo()
 
+      if (!localStorageInfo.mnemonic) return null
+
+      const jwtToken = localStorageInfo.JWT
+      const restURL = localStorageInfo.selectedServer
+      const bchjsOptions = {}
+
+      if (jwtToken) {
+        bchjsOptions.apiToken = jwtToken
+      }
+      if (restURL) {
+        bchjsOptions.restURL = restURL
+      }
+
+      const bchWalletLib = new _this.BchWallet(
+        localStorageInfo.mnemonic,
+        bchjsOptions
+      )
+
+      // Update bchjs instances  of minimal-slp-wallet libraries
+      bchWalletLib.tokens.sendBch.bchjs = new bchWalletLib.BCHJS(bchjsOptions)
+      bchWalletLib.tokens.utxos.bchjs = new bchWalletLib.BCHJS(bchjsOptions)
+      _this.setState({
+        bchWallet: bchWalletLib,
+        walletInfo: localStorageInfo
+      })
+
+      return bchWalletLib
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  // Instantiate messages library
+  async instanceMessagesLib() {
+    try {
+      const { bchWallet } = _this.state
+
+      // The constructor of the messages  library needs a parameter,
+      // this parameter is a object with the bchjs library
+      const bchjs = bchWallet.bchjs
+      const messagesLib = new _this.BchMessage({ bchjs })
+
+      _this.setState({
+        messagesLib
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  }
   // Instantiate encryption library
   async instanceEncryption() {
     try {
@@ -183,22 +249,7 @@ class MessagesForm extends React.Component {
       return false
     }
   }
-  // Decrypt a message
-  async decryptMsg(privKey, encryptedMsg) {
-    try {
-      const { encryptLib } = _this.state
 
-      const decryptedHex = await encryptLib.encryption.decryptFile(
-        privKey,
-        encryptedMsg
-      )
-      const decryptedBuff = Buffer.from(decryptedHex, 'hex')
-      const decryptedMsg = decryptedBuff.toString()
-      return decryptedMsg
-    } catch (error) {
-      throw error
-    }
-  }
   // Encrypt a message
   async encryptMsg(pubKey, msg) {
     try {
@@ -222,7 +273,6 @@ class MessagesForm extends React.Component {
       })
 
       const { address, subject, message } = _this.state
-
       _this.validateInputs()
 
       // Get public key from bch address
@@ -354,6 +404,26 @@ class MessagesForm extends React.Component {
     }
   }
 
+  async signalMessage(ipfsHash, toAddr, subject) {
+    try {
+      const { messagesLib, walletInfo } = _this.state
+      const { privateKey } = walletInfo
+
+      const txHex = await messagesLib.memo.writeMsgSignal(privateKey, ipfsHash, toAddr, subject)
+      if (!txHex) {
+        throw new Error('Could not build a hex transaction')
+      }
+
+      const txidStr = await messagesLib.bchjs.RawTransactions.sendRawTransaction(txHex)
+
+      return txidStr
+
+    } catch (error) {
+      throw error
+    }
+
+  }
+
   resetValues() {
     _this.setState({
       address: '',
@@ -390,148 +460,7 @@ class MessagesForm extends React.Component {
       throw err
     }
   }
-  // Life Cicle
-  async componentDidMount() {
-    try {
-      await _this.instanceWallet()
-      await _this.instanceEncryption()
-    } catch (error) {
-      console.error(error)
-    }
-  }
 
-  // Instance Wallet
-  async instanceWallet() {
-    try {
-      const localStorageInfo = getWalletInfo()
-
-      if (!localStorageInfo.mnemonic) return null
-
-      const jwtToken = localStorageInfo.JWT
-      const restURL = localStorageInfo.selectedServer
-      const bchjsOptions = {}
-
-      if (jwtToken) {
-        bchjsOptions.apiToken = jwtToken
-      }
-      if (restURL) {
-        bchjsOptions.restURL = restURL
-      }
-
-      const bchWalletLib = new _this.BchWallet(
-        localStorageInfo.mnemonic,
-        bchjsOptions
-      )
-
-      // Update bchjs instances  of minimal-slp-wallet libraries
-      bchWalletLib.tokens.sendBch.bchjs = new bchWalletLib.BCHJS(bchjsOptions)
-      bchWalletLib.tokens.utxos.bchjs = new bchWalletLib.BCHJS(bchjsOptions)
-      _this.setState({
-        bchWallet: bchWalletLib,
-        walletInfo: localStorageInfo
-      })
-
-      return bchWalletLib
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  async signalMessage(ipfsHash, toAddr, subject) {
-    try {
-      const { bchWallet, walletInfo } = _this.state
-      const bchjs = bchWallet.bchjs
-      const sendAddr = walletInfo.cashAddress
-      const ecPair = bchjs.ECPair.fromWIF(walletInfo.privateKey)
-
-      // Pick a UTXO controlled by this address.
-      const utxos = await bchjs.Electrumx.utxo(sendAddr)
-      // console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
-
-      if (!utxos.success) throw new Error('Could not get UTXOs')
-
-      const utxo = _this.findBiggestUtxo(utxos.utxos)
-      // console.log(`utxo: ${JSON.stringify(utxo, null, 2)}`)
-
-      // instance of transaction builder
-      const transactionBuilder = new bchjs.TransactionBuilder()
-
-      // const satoshisToSend = SATOSHIS_TO_SEND
-      const originalAmount = utxo.value
-      const vout = utxo.tx_pos
-      const txid = utxo.tx_hash
-
-      // add input with txid and index of vout
-      transactionBuilder.addInput(txid, vout)
-
-      // TODO: Compute the 1 sat/byte fee.
-      const fee = 500
-      const dust = 546
-
-      // Send the UTXO back to yourself, less the fee and dust.
-      transactionBuilder.addOutput(sendAddr, originalAmount - fee - dust)
-
-      // Add the memo.cash OP_RETURN to the transaction.
-      // This contains the IPFS hash needed to download the message.
-      const script = [
-        bchjs.Script.opcodes.OP_RETURN,
-        Buffer.from('6d02', 'hex'),
-        Buffer.from(`MSG IPFS ${ipfsHash} ${subject}`)
-      ]
-
-      // console.log(`script: ${util.inspect(script)}`);
-      const data = bchjs.Script.encode(script)
-      // console.log(`data: ${util.inspect(data)}`);
-      transactionBuilder.addOutput(data, 0)
-
-      // Send a dust amount to the recipient to signal to them that they have a message.
-      transactionBuilder.addOutput(toAddr, dust)
-
-      // Sign the transaction with the HD node.
-      let redeemScript
-      transactionBuilder.sign(
-        0,
-        ecPair,
-        redeemScript,
-        transactionBuilder.hashTypes.SIGHASH_ALL,
-        originalAmount
-      )
-
-      // build tx
-      const tx = transactionBuilder.build()
-      // output rawhex
-      const hex = tx.toHex()
-
-      if (!hex || typeof hex !== 'string') {
-        throw new Error('hex must be a string')
-      }
-      const txidStr = await bchjs.RawTransactions.sendRawTransaction(hex)
-
-      return txidStr
-    } catch (err) {
-      console.error(`Error in signalMessage()`)
-      throw err
-    }
-  }
-  
-  // Returns the utxo with the biggest balance from an array of utxos.
-  findBiggestUtxo(utxos) {
-    let largestAmount = 0
-    let largestIndex = 0
-
-    for (var i = 0; i < utxos.length; i++) {
-      const thisUtxo = utxos[i]
-
-      if (thisUtxo.value > largestAmount) {
-        largestAmount = thisUtxo.value
-        largestIndex = i
-      }
-    }
-
-    // console.log(`Largest UTXO: ${JSON.stringify(utxos[largestIndex], null, 2)}`)
-
-    return utxos[largestIndex]
-  }
 }
 
 export default MessagesForm
