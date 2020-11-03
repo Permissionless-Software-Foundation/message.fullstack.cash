@@ -32,7 +32,10 @@ class ReadMessage extends React.Component {
       pages: [],
       pagination: '',
       selectedPage: 1,
-      allSelected: false
+      allSelected: false,
+      messages: [],
+      associatedNames: {},
+      isLoaded: false
     }
   }
 
@@ -48,7 +51,11 @@ class ReadMessage extends React.Component {
             { name: 'keywords', content: 'ipfs, bch, bitcoin, bitcoin cash, send, messages' }
           ]}
         />
-        <Box border className='inbox-card'>
+        <Box
+          loaded={_this.state.isLoaded}
+          border
+          className='inbox-card'
+        >
           <div className='inbox-header'>
             <p>Inbox</p>
             <div className='inbox-search'>
@@ -98,7 +105,8 @@ class ReadMessage extends React.Component {
               />
             </div>
           </div>
-          <SimpleTable columns={columns} data={_this.state.pages[_this.state.selectedPage - 1]} />
+          {_this.state.isLoaded &&
+            <SimpleTable columns={columns} data={_this.state.pages[_this.state.selectedPage - 1]} />}
         </Box>
 
       </div>
@@ -106,37 +114,61 @@ class ReadMessage extends React.Component {
   }
 
   componentDidMount () {
-    _this.populateInbox()
+
+  }
+
+  async componentDidUpdate () {
+    // Update state
+    if (_this.state.messages !== _this.props.messages) {
+      const { messages } = _this.props
+      _this.setState({
+        messages
+      })
+      this.populateInbox(messages)
+    }
   }
 
   handleSelectedMessage (msg) {
     _this.props.hanldeOnReadMessage(msg)
   }
 
-  populateInbox () {
+  // Parse Date to string
+  getReadableDate (timestamp) {
     try {
-      // This is a test array with test data
-      const messageResponse = []
-      // Populating the array with fake data
-      for (let i = 0; i < 250; i++) {
+      const _date = new Date(timestamp * 1000).toISOString().slice(0, 10)
+      const _time = new Date(timestamp * 1000).toISOString().slice(11, 19)
+
+      return `${_date}  ${_time}`
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  async populateInbox (messages) {
+    try {
+      const { associatedNames } = _this.props
+
+      if (!messages.length) return
+
+      const messagesData = []
+      // Set table data
+      for (let i = 0; i < messages.length; i++) {
+        const value = messages[i]
         const data = {
           id: i,
-          time: ' 20 mins Ago',
-          name: `Sender ${i + 1}`,
-          subject: `Test Subject ${i + 1}`,
-          email: `sender${i + 1}@example.com`,
-          message: `
-        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-        `
+          time: _this.getReadableDate(value.time),
+          name: associatedNames[value.sender] || value.sender,
+          subject: value.subject,
+          email: value.sender,
+          message: value.hash
         }
-        messageResponse.push(data)
+        messagesData.push(data)
       }
 
       const inboxData = []
       const selectedList = []
       // Processing the data to create the data table
-      messageResponse.map((val, i) => {
+      messagesData.map((val, i) => {
         const col = _this.getColData(val, i)
         inboxData.push(col)
         selectedList.push(false)
@@ -145,7 +177,8 @@ class ReadMessage extends React.Component {
       // Updating state
       _this.setState({
         inboxData,
-        selectedList
+        selectedList,
+        isLoaded: true
       })
       // Calculates the total page quantity
       _this.handlePagination(inboxData)
@@ -157,12 +190,6 @@ class ReadMessage extends React.Component {
   // Creates and return a column of the table
   getColData (message, i) {
     try {
-      let shortMsg = ''
-
-      if (message.subject.length < 50) {
-        shortMsg = message.message.slice(0, 60 - message.subject.length)
-      }
-
       const col = {
         select:
   <input
@@ -172,7 +199,7 @@ class ReadMessage extends React.Component {
     onChange={() => _this.selectMail(i)}
   />,
         name: <a className='inbox-sender' onClick={() => _this.handleSelectedMessage(message)}>{message.name}</a>,
-        subject: <span><b>{message.subject}</b> - {shortMsg}</span>,
+        subject: <span><b>{message.subject}</b></span>,
         time: message.time
       }
       return col
@@ -213,20 +240,18 @@ class ReadMessage extends React.Component {
   }
 
   changePage (i) {
-    console.log(i)
     if (!i) {
       return
     }
     _this.setState({
       selectedPage: i
     })
-    setTimeout(() => {
-      console.log(_this.state)
-    }, 1000)
   }
 }
 
 ReadMessage.propTypes = {
-  hanldeOnReadMessage: PropTypes.func.isRequired
+  hanldeOnReadMessage: PropTypes.func.isRequired,
+  messages: PropTypes.array.isRequired,
+  associatedNames: PropTypes.object
 }
 export default ReadMessage
