@@ -7,8 +7,10 @@ import MessageCard from './message-card'
 import ReactNotification from 'react-notifications-component'
 import 'react-notifications-component/dist/theme.css'
 import { getWalletInfo } from 'gatsby-ipfs-web-wallet/src/components/localWallet'
+import { Box, Row, Col } from 'adminlte-2-react'
 
 import './read.css'
+const axios = require('axios').default
 
 // bch-encrypt-lib
 const EncryptLib = typeof window !== 'undefined' ? window.BchEncryption : null
@@ -51,22 +53,59 @@ class ReadMessages extends React.Component {
             { name: 'keywords', content: 'ipfs, bch, bitcoin, bitcoin cash, send, messages' }
           ]}
         />
-        <Inbox
-          hanldeOnReadMessage={_this.hanldeOnReadMessage}
-          messages={_this.state.messages}
-          associatedNames={_this.state.associatedNames}
-        />
+        {_this.state.bchWallet &&
+          <Inbox
+            hanldeOnReadMessage={_this.hanldeOnReadMessage}
+            messages={_this.state.messages}
+            associatedNames={_this.state.associatedNames}
+          />}
 
         {_this.state.message &&
           <MessageCard message={_this.state.message} />}
+
+        {!_this.state.bchWallet &&
+          <Box padding='true' className='container-nofound'>
+            <Row>
+              <Col xs={12}>
+                <em>You need to create or import a wallet</em>
+              </Col>
+            </Row>
+          </Box>}
       </div>
     )
   }
 
-  hanldeOnReadMessage (message) {
-    _this.setState({
-      message
-    })
+  async hanldeOnReadMessage (message) {
+    try {
+      const { walletInfo } = _this.state
+      const encryptedMsg = await _this.fetchMessage(message.ipfsHash)
+      const decryptedMsg = await _this.decryptMsg(walletInfo.privateKey, encryptedMsg)
+
+      message.message = decryptedMsg
+      _this.setState({
+        message
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  // Decrypt a message
+  async decryptMsg (privKey, encryptedMsg) {
+    try {
+      const { encryptLib } = _this.state
+
+      const decryptedHex = await encryptLib.encryption.decryptFile(
+        privKey,
+        encryptedMsg
+      )
+      const decryptedBuff = Buffer.from(decryptedHex, 'hex')
+      const decryptedMsg = decryptedBuff.toString()
+      return decryptedMsg
+    } catch (error) {
+      console.warn(error)
+      throw error
+    }
   }
 
   // Life Cicle
@@ -122,7 +161,7 @@ class ReadMessages extends React.Component {
   async instanceMessagesLib () {
     try {
       const { bchWallet } = _this.state
-
+      if (!bchWallet) return null
       // The constructor of the messages  library needs a parameter,
       // this parameter is a object with the bchjs library
       const bchjs = bchWallet.bchjs
@@ -140,7 +179,7 @@ class ReadMessages extends React.Component {
   async instanceEncryption () {
     try {
       const { bchWallet } = _this.state
-
+      if (!bchWallet) return null
       // The constructor of the encryption library needs a parameter,
       // this parameter is the bchjs library
       const BCHJS = bchWallet.BCHJS
@@ -165,7 +204,7 @@ class ReadMessages extends React.Component {
       const { cashAddress } = walletInfo
 
       if (!cashAddress) {
-        throw new Error('Wallet not found!')
+        return null
       }
       const messages = await messagesLib.memo.readMsgSignal(cashAddress)
 
@@ -203,6 +242,25 @@ class ReadMessages extends React.Component {
       return namesObject
     } catch (error) {
       console.error(error)
+    }
+  }
+
+  // Downloads the content from Temporal
+  async fetchMessage (hash) {
+    try {
+      const url = 'https://gateway.temporal.cloud/ipfs'
+      const options = {
+        method: 'GET',
+        url: `${url}/${hash}`,
+        headers: {
+          Accept: 'application/json'
+        }
+      }
+      const result = await axios(options)
+      return result.data.message
+    } catch (err) {
+      console.warn(err)
+      throw err
     }
   }
 }

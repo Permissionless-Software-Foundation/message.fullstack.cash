@@ -12,13 +12,19 @@ import './read.css'
 
 const { Text } = Inputs
 
-const columns = [
+const columns = window.innerWidth > 600 ? [
   { data: 'select' },
   { data: 'name' },
   { data: 'subject' },
   { data: 'time' }
 
 ]
+  : [
+    { data: 'select' },
+    { data: 'name' },
+    { title: ' ', data: 'subject', width: '35%' }
+
+  ]
 
 const maxMailRender = 10
 let _this
@@ -89,7 +95,9 @@ class ReadMessage extends React.Component {
             </div>
             <div clas='inbox-pagination'>
               <span className='pagination-info'>
-                {`${(_this.state.selectedPage * maxMailRender) - (maxMailRender - 1)} - ${_this.state.selectedPage * maxMailRender} / ${_this.state.inboxData.length}`}
+                {`${(_this.state.selectedPage * maxMailRender) - (maxMailRender - 1)}
+                 - ${(_this.state.selectedPage * maxMailRender) < _this.state.inboxData.length ? _this.state.selectedPage * maxMailRender : _this.state.inboxData.length} 
+                 / ${_this.state.inboxData.length}`}
               </span>
               <Button
                 className='btn-icon-add'
@@ -106,7 +114,10 @@ class ReadMessage extends React.Component {
             </div>
           </div>
           {_this.state.isLoaded &&
-            <SimpleTable columns={columns} data={_this.state.pages[_this.state.selectedPage - 1]} />}
+            <SimpleTable
+              columns={columns}
+              data={_this.state.pages[_this.state.selectedPage - 1]}
+            />}
         </Box>
 
       </div>
@@ -128,8 +139,8 @@ class ReadMessage extends React.Component {
     }
   }
 
-  handleSelectedMessage (msg) {
-    _this.props.hanldeOnReadMessage(msg)
+  handleSelectedMessage (ipfsHash) {
+    _this.props.hanldeOnReadMessage(ipfsHash)
   }
 
   // Parse Date to string
@@ -148,7 +159,9 @@ class ReadMessage extends React.Component {
     try {
       const { associatedNames } = _this.props
 
-      if (!messages.length) return
+      if (!messages.length) {
+        return
+      }
 
       const messagesData = []
       // Set table data
@@ -160,7 +173,8 @@ class ReadMessage extends React.Component {
           name: associatedNames[value.sender] || value.sender,
           subject: value.subject,
           email: value.sender,
-          message: value.hash
+          message: '',
+          ipfsHash: value.hash
         }
         messagesData.push(data)
       }
@@ -243,6 +257,7 @@ class ReadMessage extends React.Component {
     if (!i) {
       return
     }
+
     _this.setState({
       selectedPage: i
     })

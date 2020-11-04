@@ -17,7 +17,7 @@ class MessageCard extends React.Component {
   }
 
   render() {
-    const { subject, email, message } = _this.state.message
+    const { subject, email, message , time  } = _this.state.message
     return (
       <div id="message-card" >
         {
@@ -30,7 +30,7 @@ class MessageCard extends React.Component {
               <h2>{subject}</h2>
               <div className="mail-info">
                 <p>From: {email}</p>
-                <span>15 Feb. 2016 11:03 PM</span>
+                <span>{time}</span>
               </div>
             </div>
 
