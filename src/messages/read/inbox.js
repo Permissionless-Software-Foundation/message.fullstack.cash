@@ -1,8 +1,6 @@
 import React from 'react'
 import Helmet from 'react-helmet'
-import {
-  Box, SimpleTable, Inputs, Button
-} from 'adminlte-2-react'
+import { Box, SimpleTable, Inputs, Button } from 'adminlte-2-react'
 import PropTypes from 'prop-types'
 
 import ReactNotification from 'react-notifications-component'
@@ -12,19 +10,19 @@ import './read.css'
 
 const { Text } = Inputs
 
-const columns = window.innerWidth > 600 ? [
-  { data: 'select' },
-  { data: 'name' },
-  { data: 'subject' },
-  { data: 'time' }
-
-]
-  : [
-    { data: 'select' },
-    { data: 'name' },
-    { title: ' ', data: 'subject', width: '35%' }
-
-  ]
+const columns =
+  window.innerWidth > 600
+    ? [
+      { data: 'select' },
+      { data: 'name' },
+      { data: 'subject' },
+      { data: 'time' }
+    ]
+    : [
+      { data: 'select' },
+      { data: 'name' },
+      { title: ' ', data: 'subject', width: '35%' }
+    ]
 
 const maxMailRender = 10
 let _this
@@ -54,14 +52,13 @@ class ReadMessage extends React.Component {
           title='IPFS Messages for BCH | FullStack.cash'
           meta={[
             { name: 'description', content: 'Pay BCH to send messages' },
-            { name: 'keywords', content: 'ipfs, bch, bitcoin, bitcoin cash, send, messages' }
+            {
+              name: 'keywords',
+              content: 'ipfs, bch, bitcoin, bitcoin cash, send, messages'
+            }
           ]}
         />
-        <Box
-          loaded={_this.state.isLoaded}
-          border
-          className='inbox-card'
-        >
+        <Box loaded={_this.state.isLoaded} border className='inbox-card'>
           <div className='inbox-header'>
             <p>Inbox</p>
             <div className='inbox-search'>
@@ -74,29 +71,23 @@ class ReadMessage extends React.Component {
             </div>
           </div>
           <div className='inbox-inputs'>
-
             <div className='inbox-control'>
-              <Button
-                className='btn-icon-add'
-                icon='fa-trash'
-              />
-              <Button
-                className='btn-icon-add'
-                icon='fa-reply'
-              />
-              <Button
-                className='btn-icon-add'
-                icon='fa-share'
-              />
-              <Button
-                className='btn-icon-add'
-                icon='fa-sync-alt'
-              />
+              <Button className='btn-icon-add' icon='fa-trash' />
+              <Button className='btn-icon-add' icon='fa-reply' />
+              <Button className='btn-icon-add' icon='fa-share' />
+              <Button className='btn-icon-add' icon='fa-sync-alt' />
             </div>
             <div clas='inbox-pagination'>
               <span className='pagination-info'>
-                {`${(_this.state.selectedPage * maxMailRender) - (maxMailRender - 1)}
-                 - ${(_this.state.selectedPage * maxMailRender) < _this.state.inboxData.length ? _this.state.selectedPage * maxMailRender : _this.state.inboxData.length} 
+                {`${
+                  _this.state.selectedPage * maxMailRender - (maxMailRender - 1)
+                }
+                 - ${
+      _this.state.selectedPage * maxMailRender <
+                   _this.state.inboxData.length
+        ? _this.state.selectedPage * maxMailRender
+        : _this.state.inboxData.length
+      }
                  / ${_this.state.inboxData.length}`}
               </span>
               <Button
@@ -113,20 +104,18 @@ class ReadMessage extends React.Component {
               />
             </div>
           </div>
-          {_this.state.isLoaded &&
+          {_this.state.isLoaded && (
             <SimpleTable
               columns={columns}
               data={_this.state.pages[_this.state.selectedPage - 1]}
-            />}
+            />
+          )}
         </Box>
-
       </div>
     )
   }
 
-  componentDidMount () {
-
-  }
+  componentDidMount () {}
 
   async componentDidUpdate () {
     // Update state
@@ -205,15 +194,27 @@ class ReadMessage extends React.Component {
   getColData (message, i) {
     try {
       const col = {
-        select:
-  <input
-    className='inbox-checkbox'
-    type='checkbox'
-    checked={_this.state.selectedList[i]}
-    onChange={() => _this.selectMail(i)}
-  />,
-        name: <a className='inbox-sender' onClick={() => _this.handleSelectedMessage(message)}>{message.name}</a>,
-        subject: <span><b>{message.subject}</b></span>,
+        select: (
+          <input
+            className='inbox-checkbox'
+            type='checkbox'
+            checked={_this.state.selectedList[i]}
+            onChange={() => _this.selectMail(i)}
+          />
+        ),
+        name: (
+          <a
+            className='inbox-sender'
+            onClick={() => _this.handleSelectedMessage(message)}
+          >
+            {message.name}
+          </a>
+        ),
+        subject: (
+          <span>
+            <b>{message.subject}</b>
+          </span>
+        ),
         time: message.time
       }
       return col

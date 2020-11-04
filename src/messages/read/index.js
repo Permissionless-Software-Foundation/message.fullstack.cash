@@ -50,27 +50,31 @@ class ReadMessages extends React.Component {
           title='IPFS Messages for BCH | FullStack.cash'
           meta={[
             { name: 'description', content: 'Pay BCH to send messages' },
-            { name: 'keywords', content: 'ipfs, bch, bitcoin, bitcoin cash, send, messages' }
+            {
+              name: 'keywords',
+              content: 'ipfs, bch, bitcoin, bitcoin cash, send, messages'
+            }
           ]}
         />
-        {_this.state.bchWallet &&
+        {_this.state.bchWallet && (
           <Inbox
             hanldeOnReadMessage={_this.hanldeOnReadMessage}
             messages={_this.state.messages}
             associatedNames={_this.state.associatedNames}
-          />}
+          />
+        )}
 
-        {_this.state.message &&
-          <MessageCard message={_this.state.message} />}
+        {_this.state.message && <MessageCard message={_this.state.message} />}
 
-        {!_this.state.bchWallet &&
+        {!_this.state.bchWallet && (
           <Box padding='true' className='container-nofound'>
             <Row>
               <Col xs={12}>
                 <em>You need to create or import a wallet</em>
               </Col>
             </Row>
-          </Box>}
+          </Box>
+        )}
       </div>
     )
   }
@@ -79,7 +83,10 @@ class ReadMessages extends React.Component {
     try {
       const { walletInfo } = _this.state
       const encryptedMsg = await _this.fetchMessage(message.ipfsHash)
-      const decryptedMsg = await _this.decryptMsg(walletInfo.privateKey, encryptedMsg)
+      const decryptedMsg = await _this.decryptMsg(
+        walletInfo.privateKey,
+        encryptedMsg
+      )
 
       message.message = decryptedMsg
       _this.setState({
