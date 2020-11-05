@@ -277,7 +277,7 @@ class MessagesForm extends React.Component {
 
       // Get public key from bch address
       const pubKey = await _this.getPubKey(address)
-      console.log(`Publick key : ${pubKey}`)
+      console.log(`Public key : ${pubKey}`)
 
       if (!pubKey) {
         throw new Error('This bch address does not have a public key')
@@ -294,7 +294,11 @@ class MessagesForm extends React.Component {
 
       // After the payment is done, this promise is used
       // to validate the payment using a 6 second delay
-      // this time delay is used to assure the transaction
+      // this time delay is used to assure the transaction.
+      // CT 11/5/20: The way this is coded is frequently failing. It needs to
+      // use retry logic in case the first attempt fails.
+      // If it fails, trying again results in error:
+      // 'Error: Cannot add new files: already uploading'
       const hash = await new Promise(resolve =>
         setTimeout(async () => {
           const hashResult = await _this.checkHash(fileUploaded.file._id)
