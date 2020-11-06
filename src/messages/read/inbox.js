@@ -49,7 +49,7 @@ class ReadMessage extends React.Component {
         <ReactNotification />
 
         <Helmet
-          title='IPFS Messages for BCH | FullStack.cash'
+          title='message.FullStack.cash'
           meta={[
             { name: 'description', content: 'Pay BCH to send messages' },
             {
