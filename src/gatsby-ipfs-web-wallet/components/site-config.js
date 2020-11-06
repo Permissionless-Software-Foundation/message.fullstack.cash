@@ -4,7 +4,7 @@
 */
 
 const config = {
-  title: 'Secure Messaging',
+  title: 'BCH Message',
   titleShort: 'MSG',
   balanceText: 'BCH Balance',
   balanceIcon: 'fab-bitcoin'
