@@ -30,7 +30,6 @@ let _this
 class MessagesForm extends React.Component {
   constructor(props) {
     super(props)
-    console.log('props', props)
     _this = this
     this.Notification = Notification
 
@@ -43,7 +42,8 @@ class MessagesForm extends React.Component {
       inFetch: false,
       encryptLib: '',
       walletInfo: '',
-      txId: ''
+      txId: '',
+      fileUploaded: ''
     }
 
     _this.EncryptLib = EncryptLib
@@ -52,7 +52,7 @@ class MessagesForm extends React.Component {
   }
 
   render() {
-    const { address, hash, inFetch, subject, message, txId } = _this.state
+    const { address, hash, inFetch, subject, message, txId, fileUploaded } = _this.state
     return (
       <div>
         <Row>
@@ -65,7 +65,7 @@ class MessagesForm extends React.Component {
               labelPosition="above"
               onChange={this.handleUpdate}
               value={address}
-              disabled={hash || inFetch}
+              disabled={hash || inFetch || fileUploaded}
             />
           </Col>
           <Col xs={12}>
@@ -77,7 +77,7 @@ class MessagesForm extends React.Component {
               labelPosition="above"
               onChange={this.handleUpdate}
               value={subject}
-              disabled={hash || inFetch}
+              disabled={hash || inFetch || fileUploaded}
             />
           </Col>
           <Col xs={12}>
@@ -90,7 +90,7 @@ class MessagesForm extends React.Component {
               rows={8}
               value={message}
               onChange={this.handleUpdate}
-              disabled={hash || inFetch}
+              disabled={hash || inFetch || fileUploaded}
             />
           </Col>
           <Col xs={12} className="text-center">
@@ -124,16 +124,16 @@ class MessagesForm extends React.Component {
             )}
             {!hash && !inFetch && (
               <Button
-                className="send-btn"
+                className="send-btn mt-1"
                 type="primary"
-                text="Send"
+                text={fileUploaded ? 'Try Again' : 'Send'}
                 onClick={this.handleSendMessage}
               />
             )}
             {inFetch && <CircularProgress className="main-color" />}
-            {hash && (
+            {!inFetch && (hash ||fileUploaded) && (
               <Button
-                className="send-btn mt-1 "
+                className="send-btn mt-1 mr-1 ml-1 "
                 type="primary"
                 text="Reset"
                 onClick={this.resetValues}
@@ -287,25 +287,24 @@ class MessagesForm extends React.Component {
       const encryptedMsg = await _this.encryptMsg(pubKey, message)
 
       // Uploading message
-      const fileUploaded = await _this.uploadFile(
-        { address, subject, message: encryptedMsg },
-        'message.json'
-      )
+      // Uploads the encrypted message to ipfs if this has not been
+      // previously uploaded during a failed atempt obtaining the hash
+      let fileUploaded
+      if (!_this.state.fileUploaded) {
+        fileUploaded = await _this.uploadFile(
+          { address, subject, message: encryptedMsg },
+          'message.json'
+        )
+        _this.setState({
+          fileUploaded: fileUploaded
+        })
+      } else {
+        fileUploaded = _this.state.fileUploaded
+      }
 
-      // After the payment is done, this promise is used
-      // to validate the payment using a 6 second delay
-      // this time delay is used to assure the transaction.
-      // CT 11/5/20: The way this is coded is frequently failing. It needs to
-      // use retry logic in case the first attempt fails.
-      // If it fails, trying again results in error:
-      // 'Error: Cannot add new files: already uploading'
-      const hash = await new Promise(resolve =>
-        setTimeout(async () => {
-          const hashResult = await _this.checkHash(fileUploaded.file._id)
-          resolve(hashResult)
-        }, 6000)
-      )
-
+      // Try to get the ipfs hash of the uploaded file
+      // in a defined interval number of time intervals
+      const hash = await _this.tryGetHash(fileUploaded)
       if (!hash) {
         throw new Error('Error validating payment')
       }
@@ -327,7 +326,31 @@ class MessagesForm extends React.Component {
       })
     }
   }
+  // Try to get the hash of the uploaded file
+  // in a defined interval number of time intervals
+  async tryGetHash(fileUploaded) {
+    // After the payment is done, this promise is used
+    // to validate the payment using a interval
+    // this time interval is used to assure the transaction.
+    const hash = await new Promise(resolve => {
+      let attempts = 0
+      const limit = 5
+      const time = 5000
 
+      const getHash = setInterval(async () => {
+        const hashResult = await _this.checkHash(fileUploaded.file._id)
+        attempts += 1
+
+        if (hashResult || attempts >= limit) {
+          const result = hashResult || false
+          clearInterval(getHash);
+          resolve(result)
+        }
+      }, time)
+    }
+    )
+    return hash
+  }
   async uploadFile(objectData, name) {
     try {
       const { bchWallet } = _this.state
@@ -397,7 +420,6 @@ class MessagesForm extends React.Component {
         }
       }
       const resp = await fetch(`${SERVER}/files/check/${fileId}`, options)
-
       if (resp.ok) {
         return resp.json()
       } else {
@@ -435,7 +457,8 @@ class MessagesForm extends React.Component {
       message: '',
       hash: '',
       txId: '',
-      inFetch: false
+      inFetch: false,
+      fileUploaded: false
     })
 
     // Note: Trying to send a message for a second time will
