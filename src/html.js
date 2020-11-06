@@ -15,6 +15,29 @@ export default function HTML (props) {
           content='width=device-width, initial-scale=1, shrink-to-fit=no'
         />
 
+        {/* Loading animation should be loaded very first thing. */}
+        <div
+          className='test'
+          key='loader'
+          id='___loader'
+          style={{
+            alignItems: 'center',
+            backgroundColor: '#F2F2F2',
+            display: 'flex',
+            justifyContent: 'center',
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 9000,
+            flexDirection: 'column'
+          }}
+        >
+          <img src='https://i.imgur.com/8n8PYAi.gif' alt='' width='250' />
+          Loading...
+        </div>
+
         {/* minimal-slp-wallet-web */}
         <script src='https://unpkg.com/minimal-slp-wallet-web' />
 
