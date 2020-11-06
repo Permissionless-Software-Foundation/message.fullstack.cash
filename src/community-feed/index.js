@@ -8,7 +8,7 @@ class CommunityFeed extends React.Component {
     return (
       <div>
         <Helmet
-          title='PSF Community Feed'
+          title='message.FullStack.cash'
           meta={[
             { name: 'description', content: 'Pay BCH to send messages' },
             { name: 'keywords', content: 'ipfs, bch, bitcoin, bitcoin cash, send, messages' }
