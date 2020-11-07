@@ -43,11 +43,11 @@ class ReadMessages extends React.Component {
 
   render () {
     return (
-      <div className='message-container'>
+      <div className="message-container">
         <ReactNotification />
 
         <Helmet
-          title='message.FullStack.cash'
+          title="message.FullStack.cash"
           meta={[
             { name: 'description', content: 'Pay BCH to send messages' },
             {
@@ -67,7 +67,7 @@ class ReadMessages extends React.Component {
         {_this.state.message && <MessageCard message={_this.state.message} />}
 
         {!_this.state.bchWallet && (
-          <Box padding='true' className='container-nofound'>
+          <Box padding="true" className="container-nofound">
             <Row>
               <Col xs={12}>
                 <em>You need to create or import a wallet</em>
@@ -172,6 +172,11 @@ class ReadMessages extends React.Component {
       // The constructor of the messages  library needs a parameter,
       // this parameter is a object with the bchjs library
       const bchjs = bchWallet.bchjs
+
+      if (!_this.BchMessage) {
+        console.warn('bch-message-lib not loaded!')
+      }
+
       const messagesLib = new _this.BchMessage({ bchjs })
 
       _this.setState({
