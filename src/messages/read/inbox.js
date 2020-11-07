@@ -24,7 +24,8 @@ const columns =
       { title: ' ', data: 'subject', width: '35%' }
     ]
 
-const maxMailRender = 10
+// Maximum emails rendered per page view
+const maxMailRender = 20
 let _this
 class ReadMessage extends React.Component {
   constructor (props) {
@@ -39,7 +40,8 @@ class ReadMessage extends React.Component {
       allSelected: false,
       messages: [],
       associatedNames: {},
-      isLoaded: false
+      isLoaded: false,
+      section: 'inbox'
     }
   }
 
@@ -60,7 +62,20 @@ class ReadMessage extends React.Component {
         />
         <Box loaded={_this.state.isLoaded} border className='inbox-card'>
           <div className='inbox-header'>
-            <p>Inbox</p>
+            <div>
+              <Button
+                className={_this.state.section === 'inbox' ? 'inbox-send-tab-selected' : 'inbox-send-tab'}
+                onClick={() => _this.changeSection('inbox')}
+                text='Inbox'
+              />
+              <Button
+                className={_this.state.section === 'sent' ? 'inbox-send-tab-selected' : 'inbox-send-tab'}
+                onClick={() => _this.changeSection('sent')}
+                text='Sent'
+              />
+            </div>
+            <hr />
+
             <div className='inbox-search'>
               <Text
                 placeholder='Search Mail'
@@ -84,7 +99,7 @@ class ReadMessage extends React.Component {
                 }
                  - ${
       _this.state.selectedPage * maxMailRender <
-                   _this.state.inboxData.length
+                    _this.state.inboxData.length
         ? _this.state.selectedPage * maxMailRender
         : _this.state.inboxData.length
       }
@@ -94,13 +109,13 @@ class ReadMessage extends React.Component {
                 className='btn-icon-add'
                 icon='fa-chevron-left'
                 onClick={() => _this.changePage(_this.state.selectedPage - 1)}
-                disabled={_this.state.selectedPage === 1}
+                disabled={_this.state.selectedPage <= 1}
               />
               <Button
                 className='btn-icon-add'
                 icon='fa-chevron-right'
                 onClick={() => _this.changePage(_this.state.selectedPage + 1)}
-                disabled={_this.state.selectedPage === _this.state.pagesAmount}
+                disabled={_this.state.selectedPage >= _this.state.pagesAmount}
               />
             </div>
           </div>
@@ -115,12 +130,18 @@ class ReadMessage extends React.Component {
     )
   }
 
-  componentDidMount () {}
+  changeSection (section) {
+    _this.props.handleChangeSection(section)
+    _this.setState({
+      section
+    })
+  }
 
   async componentDidUpdate () {
     // Update state
     if (_this.state.messages !== _this.props.messages) {
       const { messages } = _this.props
+      // console.log(`messages: ${JSON.stringify(messages, null, 2)}`)
       _this.setState({
         messages
       })
@@ -149,6 +170,12 @@ class ReadMessage extends React.Component {
       const { associatedNames } = _this.props
 
       if (!messages.length) {
+        // Updating state
+        _this.setState({
+          inboxData: [],
+          selectedList: [],
+          pages: []
+        })
         return
       }
 
@@ -198,7 +225,6 @@ class ReadMessage extends React.Component {
           <input
             className='inbox-checkbox'
             type='checkbox'
-            checked={_this.state.selectedList[i]}
             onChange={() => _this.selectMail(i)}
           />
         ),
@@ -268,6 +294,7 @@ class ReadMessage extends React.Component {
 ReadMessage.propTypes = {
   hanldeOnReadMessage: PropTypes.func.isRequired,
   messages: PropTypes.array.isRequired,
-  associatedNames: PropTypes.object
+  associatedNames: PropTypes.object,
+  handleChangeSection: PropTypes.func.isRequired
 }
 export default ReadMessage

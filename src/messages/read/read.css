@@ -5,6 +5,10 @@
 .inbox-header {
   display: flex;
   justify-content: space-between;
+  border-bottom: 0.1px solid #d2d6de;
+  height: 34px;
+  padding-bottom: 0px;
+  margin-bottom: 1em;
 }
 .inbox-inputs {
   display: flex;
@@ -70,7 +74,22 @@ tr:nth-child(odd) {
 .mail-footer > div {
   text-align: center;
 }
+.inbox-send-tab{
+  border-radius: 0px;
+  border: none;
+}
 
+.inbox-send-tab-selected{
+  border-radius: 0px;
+  background-color: var(--main-color)!important;
+  border: none;
+  color: white!important;
+}
+.inbox-send-tab-selected:hover{
+  color: white!important;
+  background-color: var(--main-color)!important;
+
+}
 /*-responsive */
 @media (max-width: 600px) {
   .inbox-search {
