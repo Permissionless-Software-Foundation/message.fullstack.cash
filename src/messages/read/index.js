@@ -32,8 +32,10 @@ class ReadMessages extends React.Component {
       walletInfo: '',
       messagesLib: '',
       encryptLib: '',
-      messages: [],
-      associatedNames: {}
+      messagesReceived: [],
+      messagesSent: [],
+      associatedNames: {},
+      section: 'inbox'
     }
 
     _this.EncryptLib = EncryptLib
@@ -42,6 +44,8 @@ class ReadMessages extends React.Component {
   }
 
   render () {
+    const { section, associatedNames, messagesReceived, messagesSent } = _this.state
+
     return (
       <div className='message-container'>
         <ReactNotification />
@@ -59,8 +63,9 @@ class ReadMessages extends React.Component {
         {_this.state.bchWallet && (
           <Inbox
             hanldeOnReadMessage={_this.hanldeOnReadMessage}
-            messages={_this.state.messages}
-            associatedNames={_this.state.associatedNames}
+            messages={section === 'inbox' ? messagesReceived : messagesSent}
+            associatedNames={associatedNames}
+            handleChangeSection={_this.onHandleChangeSection}
           />
         )}
 
@@ -77,6 +82,20 @@ class ReadMessages extends React.Component {
         )}
       </div>
     )
+  }
+
+  onHandleChangeSection (section) {
+    try {
+      if (!section || typeof section !== 'string') {
+        throw new Error('Error changin section. Section must be a string')
+      }
+      console.log(`Change to : ${section}`)
+      _this.setState({
+        section
+      })
+    } catch (error) {
+      console.error('onHandleChangeSection()', error)
+    }
   }
 
   async hanldeOnReadMessage (message) {
@@ -214,16 +233,47 @@ class ReadMessages extends React.Component {
         return null
       }
       const messages = await messagesLib.memo.readMsgSignal(cashAddress)
+      // console.log(`Messages : ${JSON.stringify(messages, null, 2)}`)
 
       // Search names associated to the sender address
       const associatedNames = await _this.findNames(messages)
 
+      // Split messages
+      const messagesObject = _this.splitMessages(messages)
+
       _this.setState({
-        messages,
+        messagesReceived: messagesObject.received,
+        messagesSent: messagesObject.sent,
         associatedNames
       })
     } catch (error) {
       console.error(error)
+    }
+  }
+
+  // Split all messages array to Sent and Received messages
+  splitMessages (messages) {
+    try {
+      const { walletInfo } = _this.state
+      const { cashAddress } = walletInfo
+
+      const received = []
+      const sent = []
+
+      messages.map((val, i) => {
+        if (val.sender === cashAddress) {
+          sent.push(val)
+        } else {
+          received.push(val)
+        }
+      })
+
+      return {
+        received,
+        sent
+      }
+    } catch (error) {
+
     }
   }
 
