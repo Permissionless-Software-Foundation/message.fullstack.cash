@@ -12,7 +12,6 @@ console.log(`Api url ${process.env.SERVER}`)
 module.exports = {
   /* Your site config here */
   plugins: [
-    'gatsby-ipfs-web-wallet',
-    'gatsby-plugin-bch-tx-history'
+    'gatsby-ipfs-web-wallet'
   ]
 }
