@@ -25,7 +25,7 @@
     "@uppy/react": "^1.10.5",
     "@uppy/tus": "^1.7.5",
     "gatsby": "^2.25.2",
-    "gatsby-ipfs-web-wallet": "^1.15.3",
+    "gatsby-ipfs-web-wallet": "^1.17.5",
     "qrcode.react": "^1.0.0",
     "react-notifications-component": "^2.4.0"
   },
