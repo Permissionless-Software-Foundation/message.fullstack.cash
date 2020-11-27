@@ -12,6 +12,7 @@ import { Sidebar } from 'adminlte-2-react'
 import FileUpload from '../../file-upload'
 import SendMessage from '../../messages/send'
 import ReadMessages from '../../messages/read'
+import SignMessage from '../../sign-message'
 
 import CommunityFeed from '../../community-feed'
 const { Item } = Sidebar
@@ -43,6 +44,17 @@ const MenuComponents2 = props => {
           icon='fa-envelope-open'
           key='Read Messages'
           text='Read Messages'
+        />
+      )
+    },
+    {
+      key: 'Sign Message',
+      component: <SignMessage key='Sign Message' {...props} />,
+      menuItem: (
+        <Item
+          icon='fa-file-signature'
+          key='Sign Message'
+          text='Sign Message'
         />
       )
     },
