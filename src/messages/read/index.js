@@ -9,8 +9,9 @@ import 'react-notifications-component/dist/theme.css'
 import { getWalletInfo } from 'gatsby-ipfs-web-wallet/src/components/localWallet'
 import { Box, Row, Col } from 'adminlte-2-react'
 
+import { downloadMessage, getMail } from '../services'
+
 import './read.css'
-const axios = require('axios').default
 
 // bch-encrypt-lib
 const EncryptLib = typeof window !== 'undefined' ? window.BchEncryption : null
@@ -101,7 +102,7 @@ class ReadMessages extends React.Component {
   async hanldeOnReadMessage (message) {
     try {
       const { walletInfo } = _this.state
-      const encryptedMsg = await _this.fetchMessage(message.ipfsHash)
+      const encryptedMsg = await downloadMessage(message.ipfsHash)
       const decryptedMsg = await _this.decryptMsg(
         walletInfo.privateKey,
         encryptedMsg
@@ -231,13 +232,13 @@ class ReadMessages extends React.Component {
   // Find messages signals
   async findMessages () {
     try {
-      const { messagesLib, walletInfo } = _this.state
+      const { walletInfo } = _this.state
       const { cashAddress } = walletInfo
 
       if (!cashAddress) {
         return null
       }
-      const messages = await messagesLib.memo.readMsgSignal(cashAddress)
+      const messages = await getMail(cashAddress)
       // console.log(`Messages : ${JSON.stringify(messages, null, 2)}`)
 
       // Search names associated to the sender address
@@ -304,25 +305,6 @@ class ReadMessages extends React.Component {
       return namesObject
     } catch (error) {
       console.error(error)
-    }
-  }
-
-  // Downloads the content from Temporal
-  async fetchMessage (hash) {
-    try {
-      const url = 'https://gateway.temporal.cloud/ipfs'
-      const options = {
-        method: 'GET',
-        url: `${url}/${hash}`,
-        headers: {
-          Accept: 'application/json'
-        }
-      }
-      const result = await axios(options)
-      return result.data.message
-    } catch (err) {
-      console.warn(err)
-      throw err
     }
   }
 }
