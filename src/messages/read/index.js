@@ -243,6 +243,7 @@ class ReadMessages extends React.Component {
 
       // Search names associated to the sender address
       const associatedNames = await _this.findNames(messages)
+      // console.log(`associatedNames: ${JSON.stringify(associatedNames, null, 2)}`)
 
       // Split messages
       const messagesObject = _this.splitMessages(messages)

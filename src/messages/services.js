@@ -22,6 +22,9 @@ export const downloadMessage = async (hash) => {
   }
 }
 
+// Gets a list of message signals from the Community REST API. That REST API
+// walk the transaction history and determins the signals. It returns an
+// array of objects, with each object containing signal data.
 export const getMail = async (addr) => {
   try {
     const url = `${process.env.COMMUNITY_API}/mail`
