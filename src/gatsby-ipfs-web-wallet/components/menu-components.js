@@ -38,7 +38,7 @@ const MenuComponents2 = props => {
     },
     {
       key: 'Read Messages',
-      component: <ReadMessages key='Read Messages' />,
+      component: <ReadMessages key='Read Messages' {...props} />,
       menuItem: (
         <Item
           icon='fa-envelope-open'
