@@ -1,12 +1,12 @@
 import React from 'react'
 import Helmet from 'react-helmet'
+import PropTypes from 'prop-types'
 
 import Inbox from './inbox'
 import MessageCard from './message-card'
 
 import ReactNotification from 'react-notifications-component'
 import 'react-notifications-component/dist/theme.css'
-import { getWalletInfo } from 'gatsby-ipfs-web-wallet/src/components/localWallet'
 import { Box, Row, Col } from 'adminlte-2-react'
 
 import { downloadMessage, getMail } from '../services'
@@ -15,9 +15,6 @@ import './read.css'
 
 // bch-encrypt-lib
 const EncryptLib = typeof window !== 'undefined' ? window.BchEncryption : null
-
-// minimal-slp-wallet-web
-const BchWallet = typeof window !== 'undefined' ? window.SlpWallet : null
 
 // bch-message-lib
 const BchMessage = typeof window !== 'undefined' ? window.BchMessage : null
@@ -40,7 +37,6 @@ class ReadMessages extends React.Component {
     }
 
     _this.EncryptLib = EncryptLib
-    _this.BchWallet = BchWallet
     _this.BchMessage = BchMessage
   }
 
@@ -61,7 +57,7 @@ class ReadMessages extends React.Component {
             }
           ]}
         />
-        {_this.state.bchWallet && (
+        {_this.props.bchWallet && (
           <Inbox
             hanldeOnReadMessage={_this.hanldeOnReadMessage}
             messages={section === 'inbox' ? messagesReceived : messagesSent}
@@ -72,7 +68,7 @@ class ReadMessages extends React.Component {
 
         {_this.state.message && <MessageCard message={_this.state.message} />}
 
-        {!_this.state.bchWallet && (
+        {!_this.props.bchWallet && (
           <Box padding='true' className='container-nofound'>
             <Row>
               <Col xs={12}>
@@ -101,7 +97,7 @@ class ReadMessages extends React.Component {
 
   async hanldeOnReadMessage (message) {
     try {
-      const { walletInfo } = _this.state
+      const { walletInfo } = _this.props
       const encryptedMsg = await downloadMessage(message.ipfsHash)
       const decryptedMsg = await _this.decryptMsg(
         walletInfo.privateKey,
@@ -138,7 +134,7 @@ class ReadMessages extends React.Component {
   // Life Cicle
   async componentDidMount () {
     try {
-      await _this.instanceWallet() // Instantiate minimal-slp-wallet-web
+      // await _this.instanceWallet() // Instantiate minimal-slp-wallet-web
       await _this.instanceEncryption() // Instantiate bch-encrypt-lib
       await _this.instanceMessagesLib() // Instantiate bch-message-lib
       await _this.findMessages()
@@ -147,47 +143,10 @@ class ReadMessages extends React.Component {
     }
   }
 
-  // Instance Wallet
-  async instanceWallet () {
-    try {
-      const localStorageInfo = getWalletInfo()
-
-      if (!localStorageInfo.mnemonic) return null
-
-      const jwtToken = localStorageInfo.JWT
-      const restURL = localStorageInfo.selectedServer
-      const bchjsOptions = {}
-
-      if (jwtToken) {
-        bchjsOptions.apiToken = jwtToken
-      }
-      if (restURL) {
-        bchjsOptions.restURL = restURL
-      }
-
-      const bchWalletLib = new _this.BchWallet(
-        localStorageInfo.mnemonic,
-        bchjsOptions
-      )
-
-      // Update bchjs instances  of minimal-slp-wallet libraries
-      bchWalletLib.tokens.sendBch.bchjs = new bchWalletLib.BCHJS(bchjsOptions)
-      bchWalletLib.tokens.utxos.bchjs = new bchWalletLib.BCHJS(bchjsOptions)
-      _this.setState({
-        bchWallet: bchWalletLib,
-        walletInfo: localStorageInfo
-      })
-
-      return bchWalletLib
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
   // Instantiate messages library
   async instanceMessagesLib () {
     try {
-      const { bchWallet } = _this.state
+      const { bchWallet } = _this.props
       if (!bchWallet) return null
       // The constructor of the messages  library needs a parameter,
       // this parameter is a object with the bchjs library
@@ -210,7 +169,7 @@ class ReadMessages extends React.Component {
   // Instantiate encryption library
   async instanceEncryption () {
     try {
-      const { bchWallet } = _this.state
+      const { bchWallet } = _this.props
       if (!bchWallet) return null
       // The constructor of the encryption library needs a parameter,
       // this parameter is the bchjs library
@@ -232,7 +191,7 @@ class ReadMessages extends React.Component {
   // Find messages signals
   async findMessages () {
     try {
-      const { walletInfo } = _this.state
+      const { walletInfo } = _this.props
       const { cashAddress } = walletInfo
 
       if (!cashAddress) {
@@ -261,7 +220,7 @@ class ReadMessages extends React.Component {
   // Split all messages array to Sent and Received messages
   splitMessages (messages) {
     try {
-      const { walletInfo } = _this.state
+      const { walletInfo } = _this.props
       const { cashAddress } = walletInfo
 
       const received = []
@@ -308,5 +267,10 @@ class ReadMessages extends React.Component {
       console.error(error)
     }
   }
+}
+
+ReadMessages.propTypes = {
+  walletInfo: PropTypes.object.isRequired,
+  bchWallet: PropTypes.object
 }
 export default ReadMessages
