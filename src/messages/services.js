@@ -42,3 +42,22 @@ export const getMail = async (addr) => {
     throw err
   }
 }
+// Request to Community REST API.
+// Search the name associated to the bchAddr in the txs history
+export const findName = async (addr) => {
+  try {
+    const url = `${process.env.COMMUNITY_API}/names`
+    const options = {
+      method: 'GET',
+      url: `${url}/${addr}`,
+      headers: {
+        Accept: 'application/json'
+      }
+    }
+    const result = await axios(options)
+    return result.data.name
+  } catch (err) {
+    console.warn(err)
+    throw err
+  }
+}
