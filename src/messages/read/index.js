@@ -9,7 +9,7 @@ import ReactNotification from 'react-notifications-component'
 import 'react-notifications-component/dist/theme.css'
 import { Box, Row, Col } from 'adminlte-2-react'
 
-import { downloadMessage, getMail } from '../services'
+import { downloadMessage, getMail, findName } from '../services'
 
 import './read.css'
 
@@ -246,7 +246,6 @@ class ReadMessages extends React.Component {
   // Find names associated to the sender address
   async findNames (messages) {
     try {
-      const { messagesLib } = _this.state
       const namesObject = {}
       for (let i = 0; i < messages.length; i++) {
         const val = messages[i]
@@ -254,8 +253,8 @@ class ReadMessages extends React.Component {
         // Prevents repeating searching
         // an address already consulted
         if (!namesObject[addr]) {
-          const name = await messagesLib.memo.findName(addr)
-          if (name) {
+          const name = await findName(addr)
+          if (name && name !== 'notAvailable') {
             namesObject[addr] = name
           } else {
             namesObject[addr] = addr
