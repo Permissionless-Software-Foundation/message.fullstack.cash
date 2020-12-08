@@ -11,7 +11,7 @@ import NOTIFICATION from '../notification'
 const Notification = new NOTIFICATION()
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-
+import  SendMessageFooter  from './footer'
 const SERVER = process.env.SERVER
 
 // bch-encrypt-lib
@@ -141,6 +141,7 @@ class MessagesForm extends React.Component {
             )}
           </Col>
         </Row>
+        <SendMessageFooter />
       </div>
     )
   }

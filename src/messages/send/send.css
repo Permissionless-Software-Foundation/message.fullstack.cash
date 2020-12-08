@@ -4,3 +4,8 @@
 .send-btn{
     width: 100px;
 }
+
+.message-send-footer{
+    margin-top: 4em;
+    border: none;
+}
