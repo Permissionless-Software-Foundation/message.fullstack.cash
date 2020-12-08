@@ -5,13 +5,15 @@ import PropTypes from 'prop-types'
 import Inbox from './inbox'
 import MessageCard from './message-card'
 
-import ReactNotification from 'react-notifications-component'
 import 'react-notifications-component/dist/theme.css'
 import { Box, Row, Col } from 'adminlte-2-react'
 
 import { downloadMessage, getMail, findName } from '../services'
 
 import './read.css'
+
+import NOTIFICATION from '../notification'
+const Notification = new NOTIFICATION()
 
 // bch-encrypt-lib
 const EncryptLib = typeof window !== 'undefined' ? window.BchEncryption : null
@@ -33,19 +35,20 @@ class ReadMessages extends React.Component {
       messagesReceived: [],
       messagesSent: [],
       associatedNames: {},
-      section: 'inbox'
+      section: 'inbox',
+      inFetch: true
     }
+    _this.Notification = Notification
 
     _this.EncryptLib = EncryptLib
     _this.BchMessage = BchMessage
   }
 
   render () {
-    const { section, associatedNames, messagesReceived, messagesSent } = _this.state
+    const { section, associatedNames, messagesReceived, messagesSent, inFetch } = _this.state
 
     return (
       <div className='message-container'>
-        <ReactNotification />
 
         <Helmet
           title='message.FullStack.cash'
@@ -63,6 +66,7 @@ class ReadMessages extends React.Component {
             messages={section === 'inbox' ? messagesReceived : messagesSent}
             associatedNames={associatedNames}
             handleChangeSection={_this.onHandleChangeSection}
+            inFetch={inFetch}
           />
         )}
 
@@ -198,7 +202,7 @@ class ReadMessages extends React.Component {
         return null
       }
       const messages = await getMail(cashAddress)
-      // console.log(`Messages : ${JSON.stringify(messages, null, 2)}`)
+      console.log(`Messages : ${JSON.stringify(messages, null, 2)}`)
 
       // Search names associated to the sender address
       const associatedNames = await _this.findNames(messages)
@@ -206,13 +210,22 @@ class ReadMessages extends React.Component {
 
       // Split messages
       const messagesObject = _this.splitMessages(messages)
+      console.log(`messagesObject : ${JSON.stringify(messagesObject, null, 2)}`)
 
       _this.setState({
         messagesReceived: messagesObject.received,
         messagesSent: messagesObject.sent,
-        associatedNames
+        associatedNames,
+        inFetch: false
       })
     } catch (error) {
+      _this.setState({
+        inFetch: false,
+        messagesSent: [],
+        messagesReceived: []
+      })
+      _this.Notification.notify('Error', 'there was an error trying to fetch the messages', 'danger')
+
       console.error(error)
     }
   }

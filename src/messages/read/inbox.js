@@ -167,14 +167,15 @@ class ReadMessage extends React.Component {
 
   async populateInbox (messages) {
     try {
-      const { associatedNames } = _this.props
+      const { associatedNames, inFetch } = _this.props
 
       if (!messages.length) {
         // Updating state
         _this.setState({
           inboxData: [],
           selectedList: [],
-          pages: []
+          pages: [],
+          isLoaded: !inFetch
         })
         return
       }
@@ -208,7 +209,7 @@ class ReadMessage extends React.Component {
       _this.setState({
         inboxData,
         selectedList,
-        isLoaded: true
+        isLoaded: !inFetch
       })
       // Calculates the total page quantity
       _this.handlePagination(inboxData)
@@ -295,6 +296,7 @@ ReadMessage.propTypes = {
   hanldeOnReadMessage: PropTypes.func.isRequired,
   messages: PropTypes.array.isRequired,
   associatedNames: PropTypes.object,
-  handleChangeSection: PropTypes.func.isRequired
+  handleChangeSection: PropTypes.func.isRequired,
+  inFetch: PropTypes.bool.isRequired
 }
 export default ReadMessage
