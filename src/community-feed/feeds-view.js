@@ -20,39 +20,62 @@ class FeedView extends React.Component {
       inFetch: true,
       messages: []
     }
-
-
   }
 
   render() {
     const { messages } = _this.state
     return (
       <>
-        {_this.state.inFetch && <div className='spinner'>
-          <img alt='Loading...' src={Spinner} width={100} />
-        </div>}
-        {!_this.state.inFetch && <div className="community-view-container">
-          <Row>
-            {
-              messages.map((val, i) => {
-               return <Col xs={12} key={`feed-${i}`} className="mb-1">
-                  <FeedCard message={val} />
-                </Col>
-              })
-            }
-            {!messages.length && (
-              <Box padding='true' className='container-nofound'>
-                <Row>
-                  <Col xs={12}>
-                    <em>
-                      There's no messages in the community feed
-                    </em>
+        {_this.state.inFetch && (
+          <div className="spinner">
+            <img alt="Loading..." src={Spinner} width={100} />
+          </div>
+        )}
+
+        <Row>
+          <Col xs={12} key="memo-profile-link">
+            <center>
+              <h5>
+                Send a message to{' '}
+                <a
+                  target="_blank"
+                  href="https://memo.cash/profile/13hev19KaFFD7QqZEenmxUuNPNN8jxCCd5"
+                >
+                  this memo.cash profile
+                </a>{' '}
+                to have it appear in the feed below. Note: Your address must
+                hold{' '}
+                <a target="_blank" href="https://psfoundation.cash">
+                  PSF tokens
+                </a>{' '}
+                for the message to be accepted.
+              </h5>
+            </center>
+          </Col>
+        </Row>
+
+        {!_this.state.inFetch && (
+          <div className="community-view-container">
+            <Row>
+              {messages.map((val, i) => {
+                return (
+                  <Col xs={12} key={`feed-${i}`} className="mb-1">
+                    <FeedCard message={val} />
                   </Col>
-                </Row>
-              </Box>)
-            }
-          </Row>
-        </div>}
+                )
+              })}
+              {!messages.length && (
+                <Box padding="true" className="container-nofound">
+                  <Row>
+                    <Col xs={12}>
+                      <em>There's no messages in the community feed</em>
+                    </Col>
+                  </Row>
+                </Box>
+              )}
+            </Row>
+          </div>
+        )}
       </>
     )
   }
@@ -78,8 +101,5 @@ class FeedView extends React.Component {
       })
     }
   }
-
-
-
 }
 export default FeedView
