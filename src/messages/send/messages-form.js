@@ -11,7 +11,6 @@ import NOTIFICATION from '../notification'
 const Notification = new NOTIFICATION()
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import  SendMessageFooter  from './footer'
 const SERVER = process.env.SERVER
 
 // bch-encrypt-lib
@@ -43,7 +42,8 @@ class MessagesForm extends React.Component {
       encryptLib: '',
       walletInfo: '',
       txId: '',
-      fileUploaded: ''
+      fileUploaded: '',
+      timeStampText: _this.getTimeStamp()
     }
 
     _this.EncryptLib = EncryptLib
@@ -52,7 +52,16 @@ class MessagesForm extends React.Component {
   }
 
   render() {
-    const { address, hash, inFetch, subject, message, txId, fileUploaded } = _this.state
+    const {
+      address,
+      hash,
+      inFetch,
+      subject,
+      message,
+      txId,
+      fileUploaded,
+      timeStampText
+    } = _this.state
     return (
       <div>
         <Row>
@@ -80,7 +89,7 @@ class MessagesForm extends React.Component {
               disabled={hash || inFetch || fileUploaded}
             />
           </Col>
-          <Col xs={12}>
+          <Col xs={12} className="message-body-container">
             <Text
               id="Message"
               name="message"
@@ -92,6 +101,7 @@ class MessagesForm extends React.Component {
               onChange={this.handleUpdate}
               disabled={hash || inFetch || fileUploaded}
             />
+            <div className={`body-timestamp mb-2 ${(hash || inFetch || fileUploaded) ? 'disabled' :''}`}>{timeStampText}</div>
           </Col>
           <Col xs={12} className="text-center">
             {hash && (
@@ -131,7 +141,7 @@ class MessagesForm extends React.Component {
               />
             )}
             {inFetch && <CircularProgress className="main-color" />}
-            {!inFetch && (hash ||fileUploaded) && (
+            {!inFetch && (hash || fileUploaded) && (
               <Button
                 className="send-btn mt-1 mr-1 ml-1 "
                 type="primary"
@@ -141,7 +151,6 @@ class MessagesForm extends React.Component {
             )}
           </Col>
         </Row>
-        <SendMessageFooter />
       </div>
     )
   }
@@ -151,6 +160,7 @@ class MessagesForm extends React.Component {
       await _this.instanceWallet() // Instantiate minimal-slp-wallet-web
       await _this.instanceEncryption() // Instantiate bch-encrypt-lib
       await _this.instanceMessagesLib() // Instantiate bch-message-lib
+
     } catch (error) {
       console.error(error)
     }
@@ -284,8 +294,14 @@ class MessagesForm extends React.Component {
         throw new Error('This bch address does not have a public key')
       }
 
+
+      // add timeStamp into message body
+
+      const msgBody = `${message}\n\n\n\n${_this.state.timeStampText}`
+
+
       // Encrypt Message
-      const encryptedMsg = await _this.encryptMsg(pubKey, message)
+      const encryptedMsg = await _this.encryptMsg(pubKey, msgBody)
 
       // Uploading message
       // Uploads the encrypted message to ipfs if this has not been
@@ -487,6 +503,22 @@ class MessagesForm extends React.Component {
     } catch (err) {
       throw err
     }
+  }
+  getTimeStamp() {
+    // Create TimeStamp
+    const createTimeStamp = new Date()
+    const deleteTimeStamp = new Date()
+
+    // Set 30 days after
+    deleteTimeStamp.setDate(deleteTimeStamp.getDate() + 30)
+
+    _this.setState({
+      createTimeStamp: createTimeStamp.toString(),
+      deleteTimeStamp: deleteTimeStamp.toString()
+    })
+
+    return `\nMessage created: ${createTimeStamp.toString()} \nMessage will be automatically deleted: ${deleteTimeStamp.toString()}
+    `
   }
 
 }

@@ -9,3 +9,20 @@
     margin-top: 4em;
     border: none;
 }
+.message-body-container > .form-group{
+    margin-bottom: 0px!important;
+    border-bottom: none;
+}
+.body-timestamp{
+    background-color: white;
+    white-space: pre;
+    padding-left: 1em;
+}
+#Message{
+    resize: none!important;
+    outline: none!important;
+    border: none!important;
+}
+.disabled{
+    background-color: #eee;
+}
