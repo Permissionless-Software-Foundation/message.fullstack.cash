@@ -33,6 +33,7 @@ tr:nth-child(odd) {
   padding: 1em;
   text-align: justify;
   min-height: 50vh;
+  white-space: pre-line
 }
 .mail-card,
 .inbox-card {
