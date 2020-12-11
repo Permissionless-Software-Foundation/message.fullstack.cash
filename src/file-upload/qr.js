@@ -21,7 +21,7 @@ class QrCode extends React.Component {
     this.state = {
       msgStatus: 'Checking for payment...',
       hash: '',
-      startedLoop: false,
+      startedLoop: true,
       cloudLink: ''
     }
   }
@@ -35,7 +35,7 @@ class QrCode extends React.Component {
           <Col sm={8} >
             <Box className="border-none qr-container mt-2">
 
-              <div >
+              {/*       <div >
 
                 <div className="host-container">
                   <Col sm={12} className='text-center'>
@@ -52,32 +52,31 @@ class QrCode extends React.Component {
                   <h5>{_this.props.hostingCostUSD} <b>USD</b></h5>
                 </div>
 
-              </div>
+              </div> */}
 
-              <div className="col-12">
+              {/*            <div className="col-12">
                 {
                   _this.props.bchAddr &&
                   <QRCode value={_this.props.bchAddr} size={256} includeMargin={true} fgColor={"#333"} />
                 }
-              </div>
+              </div> */}
 
-              <div className="col-12 addr-container">
-                {/* Display BCH Address*/}
+              {/*   <div className="col-12 addr-container">
                 <p> <b>{_this.props.bchAddr}</b></p>
 
-              </div>
+              </div> */}
 
               {
                 _this.state.startedLoop &&
-                <div className="status-container col-12" style={_this.state.hash ? { backgroundColor: 'white' }:{ backgroundColor: 'white'}}>
+                <div className="status-container col-12" style={_this.state.hash ? { backgroundColor: 'white' } : { backgroundColor: 'white' }}>
                   {/* Show progress or check icon*/}
                   {!_this.state.hash ?
                     <CircularProgress className="main-color" /> :
                     <FontAwesomeIcon
-                    className='title-icon'
-                    size='xs'
-                    icon='check-circle'
-                  />
+                      className='title-icon'
+                      size='xs'
+                      icon='check-circle'
+                    />
 
                   }
                   {/* Show status message*/}

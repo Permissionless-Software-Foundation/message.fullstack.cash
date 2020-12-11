@@ -86,3 +86,17 @@
 .notification-container-top-right{
     right: 240px!important;
 }
+
+
+.payment-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 68vh;
+}
+
+.payment-buttons > button{
+    width: 80px;
+    margin-right: 1em;
+    margin-left: 1em;
+}
