@@ -7,7 +7,7 @@ import QrCode from './qr.js'
 import { Row, Col, Box } from 'adminlte-2-react'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { Button } from 'adminlte-2-react'
-
+import Payment from './payment'
 import NOTIFICATION from './notification'
 const Notification = new NOTIFICATION()
 
@@ -48,7 +48,7 @@ class UploadForm extends React.Component {
       hostingCostUSD: '',
       hostingCostBCH: '',
       hostingCostSAT: '',
-      section: 'uppy', // uppy or qr,
+      section: 'uppy', // uppy ,qr or payment,
       fileId: '',
       filesAdded: '',
     }
@@ -110,18 +110,29 @@ class UploadForm extends React.Component {
             </Col>
             <Col sm={2} />
           </Row>
-        ) : (
-            <div className="mb-2">
-              <QrCode
-                bchAddr={_this.state.bchAddr}
-                hostingCostUSD={_this.state.hostingCostUSD}
-                hostingCostBCH={_this.state.hostingCostBCH}
-                changeSection={_this.changeSection}
-                resetValues={_this.resetValues}
-                fileId={_this.state.fileId}
-              />
-            </div>
-          )}
+        ) : _this.state.section === 'qr' ? (
+          <div className="mb-2">
+            <QrCode
+              bchAddr={_this.state.bchAddr}
+              hostingCostUSD={_this.state.hostingCostUSD}
+              hostingCostBCH={_this.state.hostingCostBCH}
+              changeSection={_this.changeSection}
+              resetValues={_this.resetValues}
+              fileId={_this.state.fileId}
+            />
+          </div>
+        ) :
+            <Payment
+              walletInfo={_this.props.walletInfo}
+              bchWallet={_this.props.bchWallet}
+              hostingCostUSD={_this.state.hostingCostUSD}
+              hostingCostBCH={_this.state.hostingCostBCH}
+              bchAddr={_this.state.bchAddr}
+              resetValues={_this.resetValues}
+              changeSection={_this.changeSection}
+              resetValues={_this.resetValues}
+            />
+        }
       </>
     )
   }
@@ -207,7 +218,6 @@ class UploadForm extends React.Component {
 
       //uppy error handler
       await _this.uppyHandler()
-
       _this.setState({
         bchAddr: resultFile.file.bchAddr,
         hostingCostUSD: resultFile.hostingCostUSD,
@@ -222,18 +232,17 @@ class UploadForm extends React.Component {
         fileId: resultFile.file._id,
       })
 
-       _this.Notification.notify('Upload', 'Success!!', 'success')
-      console.log("notification")
+      _this.Notification.notify('Upload', 'Success!!', 'success')
       // Go to display QR Code
-      _this.changeSection('qr')
+      _this.changeSection('payment')
     } catch (error) {
       _this.setState({
         loaded: true,
       })
       console.error(error)
-        if (error.message)
-         _this.Notification.notify('Upload', error.message, 'danger')
-       else _this.Notification.notify('Upload', 'Error', 'danger') 
+      if (error.message)
+        _this.Notification.notify('Upload', error.message, 'danger')
+      else _this.Notification.notify('Upload', 'Error', 'danger')
     }
   }
 
@@ -342,5 +351,9 @@ class UploadForm extends React.Component {
     }
   }
 
+}
+UploadForm.propTypes = {
+  walletInfo: PropTypes.object.isRequired,
+  bchWallet: PropTypes.object
 }
 export default UploadForm

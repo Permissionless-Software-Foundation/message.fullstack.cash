@@ -60,7 +60,7 @@ const MenuComponents2 = props => {
     },
     {
       key: 'File Upload',
-      component: <FileUpload key='File Upload' />,
+      component: <FileUpload key='File Upload' {...props} />,
       menuItem: (
         <Item icon='fas-file-upload' key='File Upload' text='File Upload' />
       )
