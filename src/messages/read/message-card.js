@@ -5,19 +5,20 @@ import { Box, Button } from 'adminlte-2-react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 let _this
-
+//const cloudUrl = 'https://gateway.temporal.cloud/ipfs/'
+const cloudUrl  = 'https://ipfs.io/ipfs/'
 class MessageCard extends React.Component {
   constructor(props) {
     super(props)
     _this = this
 
     this.state = {
-      message: {}
+      message: {},
     }
   }
 
   render() {
-    const { subject, email, message, time } = _this.state.message
+    const { subject, email, message, time, ipfsHash } = _this.state.message
     return (
       <div id="message-card">
         {
@@ -44,6 +45,13 @@ class MessageCard extends React.Component {
             <hr></hr>
             <div className="mail-message">{message}</div>
             <hr></hr>
+            {
+              ipfsHash && (
+                <div className="text-center mb-1">
+                 <span>IPFS : <a href={`${cloudUrl}${ipfsHash}`} target="_blank">{ipfsHash}</a> </span> 
+                </div>
+              )
+            }
             <div className="mail-footer">
               <div>
                 <Button text="Delete" className="mr-2" icon="fa-trash" />
