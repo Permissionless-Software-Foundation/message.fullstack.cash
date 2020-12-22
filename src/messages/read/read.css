@@ -101,10 +101,6 @@ tr:nth-child(odd) {
   .pagination-info {
     font-size: 10px !important;
   }
-
-  .box {
-    width: 100vw !important;
-  }
   .message-container {
     padding: 0 !important;
   }

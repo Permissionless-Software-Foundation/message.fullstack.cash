@@ -31,28 +31,31 @@ class FeedView extends React.Component {
             <img alt="Loading..." src={Spinner} width={100} />
           </div>
         )}
-
-        <Row>
-          <Col xs={12} key="memo-profile-link">
-            <center>
-              <h5>
-                Send a message to{' '}
-                <a
-                  target="_blank"
-                  href="https://memo.cash/profile/13hev19KaFFD7QqZEenmxUuNPNN8jxCCd5"
-                >
-                  this memo.cash profile
+        <div className="feeds-notification">
+          <Box padding="true" className="feeds-notification-box border-none">
+            <Row >
+              <Col xs={12} key="memo-profile-link">
+                <center>
+                  <h5>
+                    Send a message to{' '}
+                    <a
+                      target="_blank"
+                      href="https://memo.cash/profile/13hev19KaFFD7QqZEenmxUuNPNN8jxCCd5"
+                    >
+                      this memo.cash profile
                 </a>{' '}
                 to have it appear in the feed below. Note: Your address must
                 hold{' '}
-                <a target="_blank" href="https://psfoundation.cash">
-                  PSF tokens
+                    <a target="_blank" href="https://psfoundation.cash">
+                      PSF tokens
                 </a>{' '}
                 for the message to be accepted.
               </h5>
-            </center>
-          </Col>
-        </Row>
+                </center>
+              </Col>
+            </Row>
+          </Box>
+        </div>
 
         {!_this.state.inFetch && (
           <div className="community-view-container">

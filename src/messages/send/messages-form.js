@@ -63,7 +63,7 @@ class MessagesForm extends React.Component {
       timeStampText
     } = _this.state
     return (
-      <div>
+      <div className="messages-form-container">
         <Row>
           <Col xs={12}>
             <Text
