@@ -44,6 +44,12 @@
 .community-view-container-box{
     min-height: calc(100vh - var(--footer-height));
 }
+.feeds-notification{
+    padding: 1em;
+}
+.feeds-notification  center{
+    text-align: justify;
+}
 @media screen and (max-width: 600px) {
     .feed-header h4{
         margin-right: 0px!important;
@@ -69,11 +75,14 @@
         font-size: 22px;
     }
     .community-view-container{
-        padding: 3em;
+        padding: 1em;
         width: 100%!important;
         margin: 0 auto;
     }
     .feed-icons-container{
         width: auto!important
+    }
+    .feed-card , .feeds-notification-box{
+        max-width:calc( 100vw - 2em);
     }
   }
