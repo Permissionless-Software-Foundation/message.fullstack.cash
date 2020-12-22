@@ -45,10 +45,12 @@
     min-height: calc(100vh - var(--footer-height));
 }
 .feeds-notification{
-    padding: 1em;
+    padding: 2em 3em 0px 3em;
+/*     padding-left: 3em;
+    padding-bottom: 1em; */
 }
 .feeds-notification  center{
-    text-align: justify;
+    text-align: center;
 }
 @media screen and (max-width: 600px) {
     .feed-header h4{
@@ -84,5 +86,11 @@
     }
     .feed-card , .feeds-notification-box{
         max-width:calc( 100vw - 2em);
+    }
+    .feeds-notification{
+        padding: 1em;
+    }
+    .feeds-notification  center{
+        text-align: justify;
     }
   }
