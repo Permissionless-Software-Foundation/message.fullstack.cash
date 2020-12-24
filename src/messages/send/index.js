@@ -1,5 +1,6 @@
 import React from 'react'
 import Helmet from 'react-helmet'
+import PropTypes from 'prop-types'
 
 import MessagesForm from './messages-form'
 
@@ -20,9 +21,13 @@ class SendMessage extends React.Component {
             { name: 'keywords', content: 'ipfs, bch, bitcoin, bitcoin cash, send, messages' }
           ]}
         />
-        <MessagesForm />
+        <MessagesForm menuNavigation={this.props.menuNavigation} />
       </div>
     )
   }
+}
+
+SendMessage.propTypes = {
+  menuNavigation: PropTypes.object
 }
 export default SendMessage

@@ -70,7 +70,7 @@ tr:nth-child(odd) {
 }
 .mail-footer {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;/* space-between; */
 }
 .mail-footer > div {
   text-align: center;

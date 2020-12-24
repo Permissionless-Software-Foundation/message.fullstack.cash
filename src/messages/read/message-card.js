@@ -36,22 +36,28 @@ class MessageCard extends React.Component {
 
             <hr></hr>
             <div className="text-center">
-              <Button className="btn-icon-add" icon="fa-trash" />
-              <Button className="btn-icon-add" icon="fa-reply" />
-              <Button className="btn-icon-add" icon="fa-share" />
-              <Button className="btn-icon-add" icon="fa-print" />
+              {/*  <Button className="btn-icon-add" icon="fa-trash" /> */}
+              <span title="Reply">
+                <Button
+                  title="Reply"
+                  className="btn-icon-add"
+                  icon="fa-reply"
+                  onClick={_this.ReplyMsg} />
+              </span>
+
+              <Button className="btn-icon-add" icon="fa-share" disabled />
+              {/* <Button className="btn-icon-add" icon="fa-print" /> */}
             </div>
             <hr></hr>
             <div className="mail-message">{message}</div>
             <hr></hr>
             <div className="mail-footer">
               <div>
-                <Button text="Delete" className="mr-2" icon="fa-trash" />
-                <Button text="Print" className="mr-2" icon="fa-print" />
-              </div>
-              <div>
-                <Button text="Reply" className="mr-2" icon="fa-reply" />
-                <Button text="Forward" className="mr-2" icon="fa-share" />
+                <Button
+                  text="Reply"
+                  icon="fa-reply"
+                  onClick={_this.ReplyMsg} />
+                <Button text="Forward" icon="fa-share" disabled />
               </div>
             </div>
           </Box>
@@ -59,7 +65,19 @@ class MessageCard extends React.Component {
       </div>
     )
   }
+  // Change to the "Send Message" view
+  // Sends the object "message" to this view
+  ReplyMsg() {
+    try {
+      const { message } = _this.state
 
+      _this.props.menuNavigation.changeTo('Send Message', { message })
+
+    } catch (error) {
+      console.error(error)
+    }
+
+  }
   async componentDidMount() {
     if (_this.state.message.id !== _this.props.message.id) {
       _this.setState({
@@ -83,6 +101,7 @@ class MessageCard extends React.Component {
   }
 }
 MessageCard.propTypes = {
-  message: PropTypes.object.isRequired
+  message: PropTypes.object.isRequired,
+  menuNavigation: PropTypes.object
 }
 export default MessageCard

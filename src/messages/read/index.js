@@ -70,7 +70,11 @@ class ReadMessages extends React.Component {
           />
         )}
 
-        {_this.state.message && <MessageCard message={_this.state.message} />}
+        {_this.state.message &&
+          <MessageCard
+            message={_this.state.message}
+            menuNavigation={_this.props.menuNavigation}
+          />}
 
         {!_this.props.bchWallet && (
           <Box padding='true' className='container-nofound'>
@@ -283,6 +287,7 @@ class ReadMessages extends React.Component {
 
 ReadMessages.propTypes = {
   walletInfo: PropTypes.object.isRequired,
-  bchWallet: PropTypes.object
+  bchWallet: PropTypes.object,
+  menuNavigation: PropTypes.object
 }
 export default ReadMessages

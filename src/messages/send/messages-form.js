@@ -43,7 +43,7 @@ class MessagesForm extends React.Component {
       walletInfo: '',
       txId: '',
       fileUploaded: '',
-      timeStampText: _this.getTimeStamp()
+      timeStampText: ''
     }
 
     _this.EncryptLib = EncryptLib
@@ -101,7 +101,7 @@ class MessagesForm extends React.Component {
               onChange={this.handleUpdate}
               disabled={hash || inFetch || fileUploaded}
             />
-            <div className={`body-timestamp mb-2 ${(hash || inFetch || fileUploaded) ? 'disabled' :''}`}>{timeStampText}</div>
+            <div className={`body-timestamp mb-2 ${(hash || inFetch || fileUploaded) ? 'disabled' : ''}`}>{timeStampText}</div>
           </Col>
           <Col xs={12} className="text-center">
             {hash && (
@@ -154,13 +154,51 @@ class MessagesForm extends React.Component {
       </div>
     )
   }
+
+  handleScroll() {
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+  // Verifies if it has to fill the form
+  // with the information of a response
+  isReply() {
+    try {
+      const { menuNavigation } = _this.props
+      const { message } = menuNavigation.data
+      let subject = message.subject
+    
+      // Verify if the subject has a 'Re:' prefix
+      let prefix = subject.substr(0, 3)
+      if (!prefix.toLowerCase().match('re:')) {
+        subject = `Re: ${subject}`
+      }
+
+      if (message && typeof message.id !== 'undefined') {
+        _this.setState({
+          address: message.sender,
+          subject: subject
+        })
+      }
+      // top scroll
+      _this.handleScroll()
+
+      // Reset redux state data 
+      menuNavigation.changeTo(null, {})
+    } catch (error) {
+      //console.error(error)
+    }
+  }
   // Life Cicle
   async componentDidMount() {
     try {
       await _this.instanceWallet() // Instantiate minimal-slp-wallet-web
       await _this.instanceEncryption() // Instantiate bch-encrypt-lib
       await _this.instanceMessagesLib() // Instantiate bch-message-lib
+      _this.isReply()
 
+      // Set timeStamp
+      _this.setState({
+        timeStampText: _this.getTimeStamp()
+      })
     } catch (error) {
       console.error(error)
     }
@@ -285,7 +323,7 @@ class MessagesForm extends React.Component {
 
       const { address, subject, message } = _this.state
       _this.validateInputs()
-
+      
       // Get public key from bch address
       const pubKey = await _this.getPubKey(address)
       console.log(`Public key : ${pubKey}`)
@@ -521,6 +559,9 @@ class MessagesForm extends React.Component {
     `
   }
 
+}
+MessagesForm.propTypes = {
+  menuNavigation: PropTypes.object
 }
 
 export default MessagesForm
