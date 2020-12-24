@@ -31,7 +31,7 @@ const MenuComponents2 = props => {
     },
     {
       key: 'Send Message',
-      component: <SendMessage key='Send Message' />,
+      component: <SendMessage key='Send Message' {...props} />,
       menuItem: (
         <Item icon='fa-envelope-open' key='Send Message' text='Send Message' />
       )

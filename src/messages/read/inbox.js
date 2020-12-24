@@ -191,7 +191,8 @@ class ReadMessage extends React.Component {
           subject: value.subject,
           email: value.sender,
           message: '',
-          ipfsHash: value.hash
+          ipfsHash: value.hash,
+          sender: value.sender
         }
         messagesData.push(data)
       }
