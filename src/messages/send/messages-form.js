@@ -156,7 +156,7 @@ class MessagesForm extends React.Component {
   }
 
   handleScroll() {
-    window.scrollTo({top: 0, behavior: 'smooth'});
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   // Verifies if it has to fill the form
   // with the information of a response
@@ -165,7 +165,7 @@ class MessagesForm extends React.Component {
       const { menuNavigation } = _this.props
       const { message } = menuNavigation.data
       let subject = message.subject
-    
+
       // Verify if the subject has a 'Re:' prefix
       let prefix = subject.substr(0, 3)
       if (!prefix.toLowerCase().match('re:')) {
@@ -322,16 +322,20 @@ class MessagesForm extends React.Component {
       })
 
       const { address, subject, message } = _this.state
+      const { walletInfo } = _this.props
+
       _this.validateInputs()
-      
-      // Get public key from bch address
+
+      // Get public key from receiver bch address
       const pubKey = await _this.getPubKey(address)
       console.log(`Public key : ${pubKey}`)
 
       if (!pubKey) {
         throw new Error('This bch address does not have a public key')
       }
-
+      // Get my public key from bch address
+      const senderPubKey = await _this.getPubKey(walletInfo.cashAddress)
+      console.log(`senderPubKey : ${senderPubKey}`)
 
       // add timeStamp into message body
 
@@ -340,14 +344,27 @@ class MessagesForm extends React.Component {
 
       // Encrypt Message
       const encryptedMsg = await _this.encryptMsg(pubKey, msgBody)
+      const senderCopy = await _this.encryptMsg(senderPubKey, msgBody)
+
+      // Payload content
+      const jsonObject = {
+        receivers: [address],
+        sender: walletInfo.cashAddress,
+        subject,
+        message: [encryptedMsg],
+        senderCopy
+
+      }
+      console.log('jsonObject', jsonObject)
 
       // Uploading message
       // Uploads the encrypted message to ipfs if this has not been
       // previously uploaded during a failed atempt obtaining the hash
+
       let fileUploaded
       if (!_this.state.fileUploaded) {
         fileUploaded = await _this.uploadFile(
-          { address, subject, message: encryptedMsg },
+          jsonObject,
           'message.json'
         )
         _this.setState({
@@ -364,7 +381,7 @@ class MessagesForm extends React.Component {
         throw new Error('Error validating payment')
       }
 
-      const txId = await _this.signalMessage(hash, address, subject)
+      const txId = await _this.signalMessage(hash, jsonObject.receivers, subject)
 
       _this.setState({
         inFetch: false,
@@ -485,12 +502,12 @@ class MessagesForm extends React.Component {
     }
   }
 
-  async signalMessage(ipfsHash, toAddr, subject) {
+  async signalMessage(ipfsHash, receivers, subject) {
     try {
       const { messagesLib, walletInfo } = _this.state
       const { privateKey } = walletInfo
 
-      const txHex = await messagesLib.memo.writeMsgSignal(privateKey, ipfsHash, toAddr, subject)
+      const txHex = await messagesLib.memo.writeMsgSignal(privateKey, ipfsHash, receivers, subject)
       if (!txHex) {
         throw new Error('Could not build a hex transaction')
       }
@@ -561,7 +578,8 @@ class MessagesForm extends React.Component {
 
 }
 MessagesForm.propTypes = {
-  menuNavigation: PropTypes.object
+  menuNavigation: PropTypes.object,
+  walletInfo: PropTypes.object
 }
 
 export default MessagesForm

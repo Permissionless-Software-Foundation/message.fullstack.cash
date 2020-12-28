@@ -18,7 +18,7 @@ class MessageCard extends React.Component {
   }
 
   render() {
-    const { subject, email, message, time, ipfsHash } = _this.state.message
+    const { subject, email, message, time, ipfsHash , isNotify, error } = _this.state.message
     return (
       <div id="message-card">
         {
@@ -50,7 +50,10 @@ class MessageCard extends React.Component {
               {/* <Button className="btn-icon-add" icon="fa-print" /> */}
             </div>
             <hr></hr>
-            <div className="mail-message">{message}</div>
+            <div 
+            className="mail-message"
+            style={ error && {color:'red'}}
+            >{message}</div>
             <hr></hr>
             {
               ipfsHash && (
