@@ -96,7 +96,8 @@ class ReadMessages extends React.Component {
       }
       console.log(`Change to : ${section}`)
       _this.setState({
-        section
+        section,
+        message: ''
       })
     } catch (error) {
       console.error('onHandleChangeSection()', error)
@@ -106,7 +107,41 @@ class ReadMessages extends React.Component {
   async hanldeOnReadMessage (message) {
     try {
       const { walletInfo } = _this.props
-      const encryptedMsg = await downloadMessage(message.ipfsHash)
+      const msgObject = await downloadMessage(message.ipfsHash)
+
+      // Notify the user if the message does not contain a
+      // copy that can be decrypted by the sender
+      if (message.sender === walletInfo.cashAddress && !msgObject.senderCopy) {
+        message.message = 'This message has been sent in an older version, so it can only be read by the receiver'
+        message.error = true
+        _this.setState({
+          message
+        })
+
+        return
+      }
+
+      let encryptedMsg
+      // Validating protocol versions
+      if (Array.isArray(msgObject.message) && Array.isArray(msgObject.receivers)) {
+        // Searchs for the associated message to the current wallet
+        msgObject.receivers.map((val, i) => {
+          if (val === walletInfo.cashAddress) {
+            encryptedMsg = msgObject.message[i]
+          }
+        })
+      } else {
+        // If the message and receivers properties are not an
+        // array is because this message is using the old specs
+        encryptedMsg = msgObject.message
+      }
+
+      // If the message has been sended from the current wallet
+      // the encrypted message stored in the 'senderCopy'
+      // property will be used
+      if (msgObject.sender === walletInfo.cashAddress) {
+        encryptedMsg = msgObject.senderCopy
+      }
       const decryptedMsg = await _this.decryptMsg(
         walletInfo.privateKey,
         encryptedMsg
@@ -118,6 +153,7 @@ class ReadMessages extends React.Component {
       })
     } catch (error) {
       console.error(error)
+      _this.Notification.notify('Error', error.message, 'danger')
     }
   }
 

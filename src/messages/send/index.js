@@ -21,13 +21,17 @@ class SendMessage extends React.Component {
             { name: 'keywords', content: 'ipfs, bch, bitcoin, bitcoin cash, send, messages' }
           ]}
         />
-        <MessagesForm menuNavigation={this.props.menuNavigation} />
+        <MessagesForm
+          menuNavigation={this.props.menuNavigation}
+          walletInfo={this.props.walletInfo}
+        />
       </div>
     )
   }
 }
 
 SendMessage.propTypes = {
-  menuNavigation: PropTypes.object
+  menuNavigation: PropTypes.object,
+  walletInfo: PropTypes.object
 }
 export default SendMessage

@@ -15,7 +15,7 @@ export const downloadMessage = async (hash) => {
       }
     }
     const result = await axios(options)
-    return result.data.message
+    return result.data
   } catch (err) {
     console.warn(err)
     throw err
