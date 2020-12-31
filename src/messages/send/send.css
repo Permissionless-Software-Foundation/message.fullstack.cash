@@ -30,3 +30,9 @@
 .messages-form-container{
     padding: 1em;
 }
+.error-text{
+    color: red;
+}
+.success-text{
+    color: green;
+}
