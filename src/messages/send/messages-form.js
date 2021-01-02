@@ -342,6 +342,45 @@ class MessagesForm extends React.Component {
       throw error
     }
   }
+  // encrypt messages for each bch address  
+  async encryptMessages(addresses,msgBody) {
+    let failArray = [] // Fail addresses array
+    let successArray = [] // Success adressess array
+    let encryptedMessages = [] // encrypted messages array
+
+    // Maps each address to get its public key
+    for (let i = 0; i < addresses.length; i++) {
+      const addr = addresses[i]
+      try {
+        // Get public key from receiver bch address
+        const pubKey = await _this.getPubKey(addr)
+        console.log(`${addr} public key : ${pubKey}`)
+
+        if (!pubKey) {
+          // Adds error msg to the array to keep track
+          // of the messages and addresses
+          encryptedMessages.push(`Public key could not be found`)
+          throw new Error(`Public key could not be found`)
+        }
+
+        // Encrypt Message
+        const encryptedMsg = await _this.encryptMsg(pubKey, msgBody)
+        encryptedMessages.push(encryptedMsg)
+        if (!encryptedMsg) {
+          throw new Error(`Error trying to encrypt message`)
+        }
+        successArray.push(addr)
+      } catch (error) {
+        console.warn(error)
+        failArray.push(`${addr} : ${error.message || 'Unhandled Error'}`)
+      }
+    }
+    return {
+      failArray,
+      successArray,
+      encryptedMessages
+    }
+  }
   // Submit message
   async handleSendMessage() {
     try {
@@ -354,7 +393,7 @@ class MessagesForm extends React.Component {
       _this.validateInputs()
 
       const addresses = _this.splitAddresses(address)
-
+      
       // Get my public key from bch address
       const senderPubKey = await _this.getPubKey(walletInfo.cashAddress)
       console.log(`senderPubKey : ${senderPubKey}`)
@@ -365,44 +404,11 @@ class MessagesForm extends React.Component {
       // Encrypt message for the sender
       const senderCopy = await _this.encryptMsg(senderPubKey, msgBody)
 
-      let failArray = [] // Fail addresses array
-      let successArray = [] // Success adressess array
-      let encryptedMessages = [] // encryptados encrypted messages array
+      const { failArray, successArray, encryptedMessages } = await _this.encryptMessages(addresses,msgBody)
 
-      // Maps each address to get its public key
-      for (let i = 0; i < addresses.length; i++) {
-        const addr = addresses[i]
-        try {
-          // Get public key from receiver bch address
-          const pubKey = await _this.getPubKey(addr)
-          console.log(`${addr} public key : ${pubKey}`)
-
-          if (!pubKey) {
-            // Adds false to the array to keep track
-            // of the messages and addresses
-            encryptedMessages.push(false)
-            throw new Error(`Public key could not be found`)
-          }
-
-          // Encrypt Message
-          const encryptedMsg = await _this.encryptMsg(pubKey, msgBody)
-          encryptedMessages.push(encryptedMsg)
-          if (!encryptedMsg) {
-            throw new Error(`Error trying to encrypt message`)
-          }
-          successArray.push(addr)
-        } catch (error) {
-          console.warn(error)
-          failArray.push(`${addr} : ${error.message || 'Unhandled Error'}`)
-        }
+      if (failArray.length === addresses.length) {
+        throw new Error(`The addresses don't have a public key`)
       }
-
-
-      // TODO: Validate if all the addresses had encryption
-      // errors or getting the public key
-      // in that case, throw an error
-
-
       // Payload content
       const jsonObject = {
         receivers: addresses,
