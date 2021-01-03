@@ -118,7 +118,7 @@ class MessagesForm extends React.Component {
             { /* show addresses that could not send the message  */}
             {
               !inFetch && (hash || fileUploaded) && failArray.map((val, i) => {
-                return <p className="error-text">
+                return <p key={val+i} className="error-text">
                   {val}
                 </p>
               })
@@ -126,7 +126,7 @@ class MessagesForm extends React.Component {
             { /* show addresses that was able to send the message */}
             {
               !inFetch && (hash || fileUploaded) && successArray.map((val, i) => {
-                return <p className="success-text">
+                return <p key={val+i} className="success-text">
                   {val}
                 </p>
               })
@@ -357,22 +357,22 @@ class MessagesForm extends React.Component {
         console.log(`${addr} public key : ${pubKey}`)
 
         if (!pubKey) {
-          // Adds error msg to the array to keep track
-          // of the messages and addresses
-          encryptedMessages.push(`Public key could not be found`)
           throw new Error(`Public key could not be found`)
         }
 
         // Encrypt Message
         const encryptedMsg = await _this.encryptMsg(pubKey, msgBody)
-        encryptedMessages.push(encryptedMsg)
         if (!encryptedMsg) {
           throw new Error(`Error trying to encrypt message`)
         }
+        encryptedMessages.push(encryptedMsg)
         successArray.push(addr)
       } catch (error) {
         console.warn(error)
-        failArray.push(`${addr} : ${error.message || 'Unhandled Error'}`)
+        // ignore blank spaces 
+        if(addr){
+          failArray.push(`${addr} : ${error.message || 'Unhandled Error'}`)
+        }
       }
     }
     return {
@@ -406,12 +406,14 @@ class MessagesForm extends React.Component {
 
       const { failArray, successArray, encryptedMessages } = await _this.encryptMessages(addresses,msgBody)
 
-      if (failArray.length === addresses.length) {
+      if (!successArray.length) {
         throw new Error(`The addresses don't have a public key`)
       }
+       
+      
       // Payload content
       const jsonObject = {
-        receivers: addresses,
+        receivers: successArray,
         sender: walletInfo.cashAddress,
         subject,
         message: encryptedMessages,
