@@ -3,6 +3,7 @@ import Helmet from 'react-helmet'
 import PropTypes from 'prop-types'
 
 import MessagesForm from './messages-form'
+import { Row, Col, Box } from 'adminlte-2-react'
 
 import ReactNotification from 'react-notifications-component'
 import 'react-notifications-component/dist/theme.css'
@@ -21,10 +22,23 @@ class SendMessage extends React.Component {
             { name: 'keywords', content: 'ipfs, bch, bitcoin, bitcoin cash, send, messages' }
           ]}
         />
-        <MessagesForm
-          menuNavigation={this.props.menuNavigation}
-          walletInfo={this.props.walletInfo}
-        />
+        {!this.props.bchWallet && (
+          <Box padding='true' className='container-nofound'>
+            <Row>
+              <Col xs={12}>
+                <em>You need to create or import a wallet</em>
+              </Col>
+            </Row>
+          </Box>
+        )}
+        {
+          this.props.bchWallet && (
+            <MessagesForm
+              menuNavigation={this.props.menuNavigation}
+              walletInfo={this.props.walletInfo}
+            />
+          )
+        }
       </div>
     )
   }
