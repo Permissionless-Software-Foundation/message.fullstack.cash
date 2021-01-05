@@ -184,6 +184,9 @@ class MessagesForm extends React.Component {
     try {
       const { menuNavigation } = _this.props
       const { message } = menuNavigation.data
+      if(message.action && message.action !== 'reply'){
+        return
+      }
       let subject = message.subject
 
       // Verify if the subject has a 'Re:' prefix
@@ -207,14 +210,42 @@ class MessagesForm extends React.Component {
       //console.error(error)
     }
   }
+  // Verifies if it has to fill the form
+  // with the information of a forward
+  isForward(){
+      try {
+        const { menuNavigation } = _this.props
+        const { message } = menuNavigation.data
+        if(message.action && message.action !== 'forward'){
+          return
+        }
+        // Add prefix to each line
+        const msg = message.message.replace(/^/gm, "> ");
+
+        if (message && typeof message.id !== 'undefined') {
+          _this.setState({
+            subject: message.subject,
+            message: msg//message.message
+          })
+        }
+        // top scroll
+        _this.handleScroll()
+  
+        // Reset redux state data 
+        menuNavigation.changeTo(null, {})
+      } catch (error) {
+        //console.error(error)
+      }
+    
+  }
   // Life Cicle
   async componentDidMount() {
     try {
       await _this.instanceWallet() // Instantiate minimal-slp-wallet-web
       await _this.instanceEncryption() // Instantiate bch-encrypt-lib
       await _this.instanceMessagesLib() // Instantiate bch-message-lib
-      _this.isReply()
-
+      _this.isReply() 
+      _this.isForward() 
       // Set timeStamp
       _this.setState({
         timeStampText: _this.getTimeStamp()

@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 let _this
 //const cloudUrl = 'https://gateway.temporal.cloud/ipfs/'
-const cloudUrl  = 'https://ipfs.io/ipfs/'
+const cloudUrl = 'https://ipfs.io/ipfs/'
 class MessageCard extends React.Component {
   constructor(props) {
     super(props)
@@ -18,7 +18,7 @@ class MessageCard extends React.Component {
   }
 
   render() {
-    const { subject, email, message, time, ipfsHash , isNotify, error } = _this.state.message
+    const { subject, email, message, time, ipfsHash, isNotify, error } = _this.state.message
     return (
       <div id="message-card">
         {
@@ -46,19 +46,23 @@ class MessageCard extends React.Component {
                   onClick={_this.ReplyMsg} />
               </span>
 
-              <Button className="btn-icon-add" icon="fa-share" disabled />
+              <Button 
+              className="btn-icon-add" 
+              icon="fa-share" 
+              onClick={_this.forwardMsg}
+              />
               {/* <Button className="btn-icon-add" icon="fa-print" /> */}
             </div>
             <hr></hr>
-            <div 
-            className="mail-message"
-            style={ error && {color:'red'}}
+            <div
+              className="mail-message"
+              style={error && { color: 'red' }}
             >{message}</div>
             <hr></hr>
             {
               ipfsHash && (
                 <div className="text-center mb-1">
-                 <span>IPFS : <a href={`${cloudUrl}${ipfsHash}`} target="_blank">{ipfsHash}</a> </span> 
+                  <span>IPFS : <a href={`${cloudUrl}${ipfsHash}`} target="_blank">{ipfsHash}</a> </span>
                 </div>
               )
             }
@@ -68,7 +72,11 @@ class MessageCard extends React.Component {
                   text="Reply"
                   icon="fa-reply"
                   onClick={_this.ReplyMsg} />
-                <Button text="Forward" icon="fa-share" disabled />
+                <Button
+                  text="Forward"
+                  icon="fa-share"
+                  onClick={_this.forwardMsg} />
+
               </div>
             </div>
           </Box>
@@ -81,7 +89,20 @@ class MessageCard extends React.Component {
   ReplyMsg() {
     try {
       const { message } = _this.state
+      message.action = 'reply'
+      _this.props.menuNavigation.changeTo('Send Message', { message })
 
+    } catch (error) {
+      console.error(error)
+    }
+
+  }
+  // Change to the "Send Message" view
+  // Sends the object "message" to this view
+  forwardMsg() {
+    try {
+      const { message } = _this.state
+      message.action = 'forward'
       _this.props.menuNavigation.changeTo('Send Message', { message })
 
     } catch (error) {
