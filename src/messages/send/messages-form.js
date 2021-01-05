@@ -43,7 +43,9 @@ class MessagesForm extends React.Component {
       walletInfo: '',
       txId: '',
       fileUploaded: '',
-      timeStampText: ''
+      timeStampText: '',
+      failArray: [],
+      successArray: []
     }
 
     _this.EncryptLib = EncryptLib
@@ -60,7 +62,9 @@ class MessagesForm extends React.Component {
       message,
       txId,
       fileUploaded,
-      timeStampText
+      timeStampText,
+      failArray,
+      successArray
     } = _this.state
     return (
       <div className="messages-form-container">
@@ -104,15 +108,31 @@ class MessagesForm extends React.Component {
             <div className={`body-timestamp mb-2 ${(hash || inFetch || fileUploaded) ? 'disabled' : ''}`}>{timeStampText}</div>
           </Col>
           <Col xs={12} className="text-center">
+            {hash && <div>
+              <FontAwesomeIcon
+                className="title-icon mb-1 mt-1"
+                size="xs"
+                icon="check-circle"
+              />
+            </div>}
+            { /* show addresses that could not send the message  */}
+            {
+              !inFetch && (hash || fileUploaded) && failArray.map((val, i) => {
+                return <p key={val+i} className="error-text">
+                  {val}
+                </p>
+              })
+            }
+            { /* show addresses that was able to send the message */}
+            {
+              !inFetch && (hash || fileUploaded) && successArray.map((val, i) => {
+                return <p key={val+i} className="success-text">
+                  {val}
+                </p>
+              })
+            }
             {hash && (
               <div>
-                <div>
-                  <FontAwesomeIcon
-                    className="title-icon mb-1 mt-1"
-                    size="xs"
-                    icon="check-circle"
-                  />
-                </div>
                 <div>
                   IPFS HASH:
                   <a href={`${cloudUrl}/${hash}`} target="_blank">
@@ -344,7 +364,54 @@ class MessagesForm extends React.Component {
       throw error
     }
   }
+  splitAddresses(addresses) {
+    try {
+      const withoutSpaces = addresses.replace(/ /g, '')
+      const splited = withoutSpaces.split(',')
+      return splited
+    } catch (error) {
+      throw error
+    }
+  }
+  // encrypt messages for each bch address  
+  async encryptMessages(addresses,msgBody) {
+    let failArray = [] // Fail addresses array
+    let successArray = [] // Success adressess array
+    let encryptedMessages = [] // encrypted messages array
 
+    // Maps each address to get its public key
+    for (let i = 0; i < addresses.length; i++) {
+      const addr = addresses[i]
+      try {
+        // Get public key from receiver bch address
+        const pubKey = await _this.getPubKey(addr)
+        console.log(`${addr} public key : ${pubKey}`)
+
+        if (!pubKey) {
+          throw new Error(`Public key could not be found`)
+        }
+
+        // Encrypt Message
+        const encryptedMsg = await _this.encryptMsg(pubKey, msgBody)
+        if (!encryptedMsg) {
+          throw new Error(`Error trying to encrypt message`)
+        }
+        encryptedMessages.push(encryptedMsg)
+        successArray.push(addr)
+      } catch (error) {
+        console.warn(error)
+        // ignore blank spaces 
+        if(addr){
+          failArray.push(`${addr} : ${error.message || 'Unhandled Error'}`)
+        }
+      }
+    }
+    return {
+      failArray,
+      successArray,
+      encryptedMessages
+    }
+  }
   // Submit message
   async handleSendMessage() {
     try {
@@ -354,35 +421,33 @@ class MessagesForm extends React.Component {
 
       const { address, subject, message } = _this.state
       const { walletInfo } = _this.props
-
       _this.validateInputs()
 
-      // Get public key from receiver bch address
-      const pubKey = await _this.getPubKey(address)
-      console.log(`Public key : ${pubKey}`)
-
-      if (!pubKey) {
-        throw new Error('This bch address does not have a public key')
-      }
+      const addresses = _this.splitAddresses(address)
+      
       // Get my public key from bch address
       const senderPubKey = await _this.getPubKey(walletInfo.cashAddress)
       console.log(`senderPubKey : ${senderPubKey}`)
 
       // add timeStamp into message body
-
       const msgBody = `${message}\n\n\n\n${_this.state.timeStampText}`
 
-
-      // Encrypt Message
-      const encryptedMsg = await _this.encryptMsg(pubKey, msgBody)
+      // Encrypt message for the sender
       const senderCopy = await _this.encryptMsg(senderPubKey, msgBody)
 
+      const { failArray, successArray, encryptedMessages } = await _this.encryptMessages(addresses,msgBody)
+
+      if (!successArray.length) {
+        throw new Error(`The addresses don't have a public key`)
+      }
+       
+      
       // Payload content
       const jsonObject = {
-        receivers: [address],
+        receivers: successArray,
         sender: walletInfo.cashAddress,
         subject,
-        message: [encryptedMsg],
+        message: encryptedMessages,
         senderCopy
 
       }
@@ -417,7 +482,9 @@ class MessagesForm extends React.Component {
       _this.setState({
         inFetch: false,
         hash,
-        txId
+        txId,
+        failArray,
+        successArray
       })
 
       _this.Notification.notify('Message Sent', 'Success!!', 'success')
@@ -561,7 +628,9 @@ class MessagesForm extends React.Component {
       hash: '',
       txId: '',
       inFetch: false,
-      fileUploaded: false
+      fileUploaded: false,
+      failArray: [],
+      successArray: []
     })
 
     // Note: Trying to send a message for a second time will
