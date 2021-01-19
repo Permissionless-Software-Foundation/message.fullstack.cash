@@ -45,12 +45,15 @@ class MessageCard extends React.Component {
                   icon="fa-reply"
                   onClick={_this.ReplyMsg} />
               </span>
+              <span title="Forward">
+                <Button
+                  title="Forward"
+                  className="btn-icon-add"
+                  icon="fa-share"
+                  onClick={_this.forwardMsg}
+                />
+              </span>
 
-              <Button 
-              className="btn-icon-add" 
-              icon="fa-share" 
-              onClick={_this.forwardMsg}
-              />
               {/* <Button className="btn-icon-add" icon="fa-print" /> */}
             </div>
             <hr></hr>

@@ -118,7 +118,7 @@ class MessagesForm extends React.Component {
             { /* show addresses that could not send the message  */}
             {
               !inFetch && (hash || fileUploaded) && failArray.map((val, i) => {
-                return <p key={val+i} className="error-text">
+                return <p key={val + i} className="error-text">
                   {val}
                 </p>
               })
@@ -126,7 +126,7 @@ class MessagesForm extends React.Component {
             { /* show addresses that was able to send the message */}
             {
               !inFetch && (hash || fileUploaded) && successArray.map((val, i) => {
-                return <p key={val+i} className="success-text">
+                return <p key={val + i} className="success-text">
                   {val}
                 </p>
               })
@@ -184,7 +184,7 @@ class MessagesForm extends React.Component {
     try {
       const { menuNavigation } = _this.props
       const { message } = menuNavigation.data
-      if(message.action && message.action !== 'reply'){
+      if (message.action && message.action !== 'reply') {
         return
       }
       let subject = message.subject
@@ -212,31 +212,37 @@ class MessagesForm extends React.Component {
   }
   // Verifies if it has to fill the form
   // with the information of a forward
-  isForward(){
-      try {
-        const { menuNavigation } = _this.props
-        const { message } = menuNavigation.data
-        if(message.action && message.action !== 'forward'){
-          return
-        }
-        // Add prefix to each line
-        const msg = message.message.replace(/^/gm, "> ");
-
-        if (message && typeof message.id !== 'undefined') {
-          _this.setState({
-            subject: message.subject,
-            message: msg//message.message
-          })
-        }
-        // top scroll
-        _this.handleScroll()
-  
-        // Reset redux state data 
-        menuNavigation.changeTo(null, {})
-      } catch (error) {
-        //console.error(error)
+  isForward() {
+    try {
+      const { menuNavigation } = _this.props
+      const { message } = menuNavigation.data
+      if (message.action && message.action !== 'forward') {
+        return
       }
-    
+      let subject =  message.subject
+      // Verify if the subject has a 'Fwd:' prefix
+      let prefix = subject.substr(0, 4)
+      if (!prefix.toLowerCase().match('fwd:')) {
+        subject = `Fwd: ${subject}`
+      }
+      // Add prefix to each line
+      const msg = message.message.replace(/^/gm, "> ");
+
+      if (message && typeof message.id !== 'undefined') {
+        _this.setState({
+          subject: subject,
+          message: msg//message.message
+        })
+      }
+      // top scroll
+      _this.handleScroll()
+
+      // Reset redux state data 
+      menuNavigation.changeTo(null, {})
+    } catch (error) {
+      //console.error(error)
+    }
+
   }
   // Life Cicle
   async componentDidMount() {
@@ -244,8 +250,8 @@ class MessagesForm extends React.Component {
       await _this.instanceWallet() // Instantiate minimal-slp-wallet-web
       await _this.instanceEncryption() // Instantiate bch-encrypt-lib
       await _this.instanceMessagesLib() // Instantiate bch-message-lib
-      _this.isReply() 
-      _this.isForward() 
+      _this.isReply()
+      _this.isForward()
       // Set timeStamp
       _this.setState({
         timeStampText: _this.getTimeStamp()
@@ -374,7 +380,7 @@ class MessagesForm extends React.Component {
     }
   }
   // encrypt messages for each bch address  
-  async encryptMessages(addresses,msgBody) {
+  async encryptMessages(addresses, msgBody) {
     let failArray = [] // Fail addresses array
     let successArray = [] // Success adressess array
     let encryptedMessages = [] // encrypted messages array
@@ -401,7 +407,7 @@ class MessagesForm extends React.Component {
       } catch (error) {
         console.warn(error)
         // ignore blank spaces 
-        if(addr){
+        if (addr) {
           failArray.push(`${addr} : ${error.message || 'Unhandled Error'}`)
         }
       }
@@ -424,7 +430,7 @@ class MessagesForm extends React.Component {
       _this.validateInputs()
 
       const addresses = _this.splitAddresses(address)
-      
+
       // Get my public key from bch address
       const senderPubKey = await _this.getPubKey(walletInfo.cashAddress)
       console.log(`senderPubKey : ${senderPubKey}`)
@@ -435,13 +441,13 @@ class MessagesForm extends React.Component {
       // Encrypt message for the sender
       const senderCopy = await _this.encryptMsg(senderPubKey, msgBody)
 
-      const { failArray, successArray, encryptedMessages } = await _this.encryptMessages(addresses,msgBody)
+      const { failArray, successArray, encryptedMessages } = await _this.encryptMessages(addresses, msgBody)
 
       if (!successArray.length) {
         throw new Error(`The addresses don't have a public key`)
       }
-       
-      
+
+
       // Payload content
       const jsonObject = {
         receivers: successArray,
