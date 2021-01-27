@@ -13,6 +13,7 @@ import FileUpload from '../../file-upload'
 import SendMessage from '../../messages/send'
 import ReadMessages from '../../messages/read'
 import SignMessage from '../../sign-message'
+import About from '../../about'
 
 import CommunityFeed from '../../community-feed'
 const { Item } = Sidebar
@@ -51,11 +52,7 @@ const MenuComponents2 = props => {
       key: 'Sign Message',
       component: <SignMessage key='Sign Message' {...props} />,
       menuItem: (
-        <Item
-          icon='fa-file-signature'
-          key='Sign Message'
-          text='Sign Message'
-        />
+        <Item icon='fa-file-signature' key='Sign Message' text='Sign Message' />
       )
     },
     {
@@ -65,7 +62,12 @@ const MenuComponents2 = props => {
         <Item icon='fas-file-upload' key='File Upload' text='File Upload' />
       )
     },
-    ...DefaultMenu
+    ...DefaultMenu,
+    {
+      key: 'About',
+      component: <About key='About' {...props} />,
+      menuItem: <Item icon='fas-question' key='About' text='About' />
+    }
   ]
   return menu
 }
