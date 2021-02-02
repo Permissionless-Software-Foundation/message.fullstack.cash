@@ -7,9 +7,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import NOTIFICATION from './notification'
 const Notification = new NOTIFICATION()
 const QRCode = require('qrcode.react')
-const cloudUrl = 'https://gateway.temporal.cloud/ipfs/'
+const cloudUrl = 'https://hub.textile.io/ipfs/'
 
-const SERVER = process.env.SERVER
+const SERVER = process.env.FILE_SERVER
 
 let _this
 
@@ -52,7 +52,7 @@ class Payment extends React.Component {
             </div>
             <h4>
               It will cost
-              <b> {_this.props.hostingCostUSD} USD  </b>
+              <b> ${_this.props.hostingCostUSD} USD  </b>
               to have this file hosted on IPFS. Do you want to pay this amount?
             </h4>
             <div className="col-6 uppy-progress mt-1 mb-1">

@@ -5,8 +5,8 @@ import { Box, Button } from 'adminlte-2-react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 let _this
-//const cloudUrl = 'https://gateway.temporal.cloud/ipfs/'
-const cloudUrl = 'https://ipfs.io/ipfs/'
+const cloudUrl = 'https://hub.textile.io/ipfs/'
+// const cloudUrl = 'https://ipfs.io/ipfs/'
 class MessageCard extends React.Component {
   constructor(props) {
     super(props)

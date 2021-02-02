@@ -37,7 +37,7 @@
     "url": "https://github.com/Permissionless-Software-Foundation/message.fullstack.cash/issues"
   },
   "devDependencies": {
-    "semantic-release": "^17.3.1",
+    "semantic-release": "^17.3.7",
     "standard": "^14.3.4"
   },
   "release": {
