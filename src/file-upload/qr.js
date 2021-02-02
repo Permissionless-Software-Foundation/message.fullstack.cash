@@ -6,9 +6,9 @@ import { Button, Row, Col, Box } from 'adminlte-2-react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const QRCode = require('qrcode.react')
-const cloudUrl = 'https://gateway.temporal.cloud/ipfs/'
+const cloudUrl = 'https://hub.textile.io/ipfs/'
 
-const SERVER = process.env.SERVER
+const SERVER = process.env.FILE_SERVER
 
 let _this
 
@@ -120,7 +120,7 @@ class QrCode extends React.Component {
   }
 
   goToCloud() {
-    window.open(`${cloudUrl}/${_this.state.hash}`, '_blank')
+    window.open(`${cloudUrl}${_this.state.hash}`, '_blank')
   }
   back() {
     _this.props.changeSection('uppy')
@@ -146,7 +146,7 @@ class QrCode extends React.Component {
         _this.setState({
           msgStatus: 'File uploaded successfully!',
           hash: hash,
-          cloudLink: `${cloudUrl}/${hash}`
+          cloudLink: `${cloudUrl}${hash}`
         })
         clearInterval(myInterval);
       }

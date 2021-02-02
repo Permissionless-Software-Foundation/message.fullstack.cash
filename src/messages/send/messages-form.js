@@ -11,7 +11,7 @@ import NOTIFICATION from '../notification'
 const Notification = new NOTIFICATION()
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-const SERVER = process.env.SERVER
+const SERVER = process.env.FILE_SERVER
 
 // bch-encrypt-lib
 const EncryptLib = typeof window !== 'undefined' ? window.BchEncryption : null
@@ -22,7 +22,7 @@ const BchWallet = typeof window !== 'undefined' ? window.SlpWallet : null
 // bch-message-lib
 const BchMessage = typeof window !== 'undefined' ? window.BchMessage : null
 
-const cloudUrl = 'https://gateway.temporal.cloud/ipfs/'
+const cloudUrl = 'https://hub.textile.io/ipfs/'
 
 let _this
 
@@ -105,37 +105,49 @@ class MessagesForm extends React.Component {
               onChange={this.handleUpdate}
               disabled={hash || inFetch || fileUploaded}
             />
-            <div className={`body-timestamp mb-2 ${(hash || inFetch || fileUploaded) ? 'disabled' : ''}`}>{timeStampText}</div>
+            <div
+              className={`body-timestamp mb-2 ${
+                hash || inFetch || fileUploaded ? 'disabled' : ''
+              }`}
+            >
+              {timeStampText}
+            </div>
           </Col>
           <Col xs={12} className="text-center">
-            {hash && <div>
-              <FontAwesomeIcon
-                className="title-icon mb-1 mt-1"
-                size="xs"
-                icon="check-circle"
-              />
-            </div>}
-            { /* show addresses that could not send the message  */}
-            {
-              !inFetch && (hash || fileUploaded) && failArray.map((val, i) => {
-                return <p key={val + i} className="error-text">
-                  {val}
-                </p>
-              })
-            }
-            { /* show addresses that was able to send the message */}
-            {
-              !inFetch && (hash || fileUploaded) && successArray.map((val, i) => {
-                return <p key={val + i} className="success-text">
-                  {val}
-                </p>
-              })
-            }
+            {hash && (
+              <div>
+                <FontAwesomeIcon
+                  className="title-icon mb-1 mt-1"
+                  size="xs"
+                  icon="check-circle"
+                />
+              </div>
+            )}
+            {/* show addresses that could not send the message  */}
+            {!inFetch &&
+              (hash || fileUploaded) &&
+              failArray.map((val, i) => {
+                return (
+                  <p key={val + i} className="error-text">
+                    {val}
+                  </p>
+                )
+              })}
+            {/* show addresses that was able to send the message */}
+            {!inFetch &&
+              (hash || fileUploaded) &&
+              successArray.map((val, i) => {
+                return (
+                  <p key={val + i} className="success-text">
+                    {val}
+                  </p>
+                )
+              })}
             {hash && (
               <div>
                 <div>
                   IPFS HASH:
-                  <a href={`${cloudUrl}/${hash}`} target="_blank">
+                  <a href={`${cloudUrl}${hash}`} target="_blank">
                     {hash}
                   </a>
                 </div>
@@ -143,7 +155,7 @@ class MessagesForm extends React.Component {
             )}
             {txId && (
               <div className="mt-1">
-                Transaction ID:
+                Transaction ID:{' '}
                 <a
                   href={`https://explorer.bitcoin.com/bch/tx/${txId}`}
                   target="_blank"
@@ -176,7 +188,7 @@ class MessagesForm extends React.Component {
   }
 
   handleScroll() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
   // Verifies if it has to fill the form
   // with the information of a response
@@ -204,7 +216,7 @@ class MessagesForm extends React.Component {
       // top scroll
       _this.handleScroll()
 
-      // Reset redux state data 
+      // Reset redux state data
       menuNavigation.changeTo(null, {})
     } catch (error) {
       //console.error(error)
@@ -219,30 +231,29 @@ class MessagesForm extends React.Component {
       if (message.action && message.action !== 'forward') {
         return
       }
-      let subject =  message.subject
+      let subject = message.subject
       // Verify if the subject has a 'Fwd:' prefix
       let prefix = subject.substr(0, 4)
       if (!prefix.toLowerCase().match('fwd:')) {
         subject = `Fwd: ${subject}`
       }
       // Add prefix to each line
-      const msg = message.message.replace(/^/gm, "> ");
+      const msg = message.message.replace(/^/gm, '> ')
 
       if (message && typeof message.id !== 'undefined') {
         _this.setState({
           subject: subject,
-          message: msg//message.message
+          message: msg //message.message
         })
       }
       // top scroll
       _this.handleScroll()
 
-      // Reset redux state data 
+      // Reset redux state data
       menuNavigation.changeTo(null, {})
     } catch (error) {
       //console.error(error)
     }
-
   }
   // Life Cicle
   async componentDidMount() {
@@ -379,7 +390,7 @@ class MessagesForm extends React.Component {
       throw error
     }
   }
-  // encrypt messages for each bch address  
+  // encrypt messages for each bch address
   async encryptMessages(addresses, msgBody) {
     let failArray = [] // Fail addresses array
     let successArray = [] // Success adressess array
@@ -406,7 +417,7 @@ class MessagesForm extends React.Component {
         successArray.push(addr)
       } catch (error) {
         console.warn(error)
-        // ignore blank spaces 
+        // ignore blank spaces
         if (addr) {
           failArray.push(`${addr} : ${error.message || 'Unhandled Error'}`)
         }
@@ -441,12 +452,15 @@ class MessagesForm extends React.Component {
       // Encrypt message for the sender
       const senderCopy = await _this.encryptMsg(senderPubKey, msgBody)
 
-      const { failArray, successArray, encryptedMessages } = await _this.encryptMessages(addresses, msgBody)
+      const {
+        failArray,
+        successArray,
+        encryptedMessages
+      } = await _this.encryptMessages(addresses, msgBody)
 
       if (!successArray.length) {
         throw new Error(`The addresses don't have a public key`)
       }
-
 
       // Payload content
       const jsonObject = {
@@ -455,7 +469,6 @@ class MessagesForm extends React.Component {
         subject,
         message: encryptedMessages,
         senderCopy
-
       }
       console.log('jsonObject', jsonObject)
 
@@ -465,10 +478,7 @@ class MessagesForm extends React.Component {
 
       let fileUploaded
       if (!_this.state.fileUploaded) {
-        fileUploaded = await _this.uploadFile(
-          jsonObject,
-          'message.json'
-        )
+        fileUploaded = await _this.uploadFile(jsonObject, 'message.json')
         _this.setState({
           fileUploaded: fileUploaded
         })
@@ -483,7 +493,11 @@ class MessagesForm extends React.Component {
         throw new Error('Error validating payment')
       }
 
-      const txId = await _this.signalMessage(hash, jsonObject.receivers, subject)
+      const txId = await _this.signalMessage(
+        hash,
+        jsonObject.receivers,
+        subject
+      )
 
       _this.setState({
         inFetch: false,
@@ -519,12 +533,11 @@ class MessagesForm extends React.Component {
 
         if (hashResult || attempts >= limit) {
           const result = hashResult || false
-          clearInterval(getHash);
+          clearInterval(getHash)
           resolve(result)
         }
       }, time)
-    }
-    )
+    })
     return hash
   }
   async uploadFile(objectData, name) {
@@ -611,19 +624,24 @@ class MessagesForm extends React.Component {
       const { messagesLib, walletInfo } = _this.state
       const { privateKey } = walletInfo
 
-      const txHex = await messagesLib.memo.writeMsgSignal(privateKey, ipfsHash, receivers, subject)
+      const txHex = await messagesLib.memo.writeMsgSignal(
+        privateKey,
+        ipfsHash,
+        receivers,
+        subject
+      )
       if (!txHex) {
         throw new Error('Could not build a hex transaction')
       }
 
-      const txidStr = await messagesLib.bchjs.RawTransactions.sendRawTransaction(txHex)
+      const txidStr = await messagesLib.bchjs.RawTransactions.sendRawTransaction(
+        txHex
+      )
 
       return txidStr
-
     } catch (error) {
       throw error
     }
-
   }
 
   resetValues() {
@@ -665,6 +683,7 @@ class MessagesForm extends React.Component {
       throw err
     }
   }
+
   getTimeStamp() {
     // Create TimeStamp
     const createTimeStamp = new Date()
@@ -681,7 +700,6 @@ class MessagesForm extends React.Component {
     return `\nMessage created: ${createTimeStamp.toString()} \nMessage will be automatically deleted: ${deleteTimeStamp.toString()}
     `
   }
-
 }
 MessagesForm.propTypes = {
   menuNavigation: PropTypes.object,

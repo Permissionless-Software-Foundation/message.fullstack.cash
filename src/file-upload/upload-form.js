@@ -28,7 +28,7 @@ import '@uppy/dashboard/dist/style.css'
 
 //const methods = [containsWhiteSpace, isNotInRange]
 
-const SERVER = process.env.SERVER
+const SERVER = process.env.FILE_SERVER
 
 let _this
 let uppy
