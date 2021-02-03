@@ -6,7 +6,8 @@ export const isBrowser = () => typeof window !== 'undefined'
 // Downloads the content from Temporal
 export const downloadMessage = async (hash) => {
   try {
-    const url = 'https://gateway.temporal.cloud/ipfs'
+    // const url = 'https://gateway.temporal.cloud/ipfs'
+    const url = 'https://hub.textile.io/ipfs'
     const options = {
       method: 'GET',
       url: `${url}/${hash}`,
