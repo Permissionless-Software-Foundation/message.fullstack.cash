@@ -17,7 +17,7 @@ const config = {
   hostText: 'FullStack.cash',
   hostUrl: 'https://fullstack.cash/',
   sourceCode: 'https://github.com/Permissionless-Software-Foundation/message.fullstack.cash',
-  torUrl: '2qeeub5mshokrthmnb3mzcb5ah2lqzkz4fbdx6er4nhxags2pfkyoqid.onion',
+  torUrl: 'ypanhdgnv2lbldylv7z5dszlq3vffh5bjo4sronfwdd5lepjmjgbuaad.onion',
   clearWebUrl: 'https://message.FullStack.cash'
 }
 
