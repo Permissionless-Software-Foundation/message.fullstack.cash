@@ -340,12 +340,12 @@ class MessagesForm extends React.Component {
 
       // The constructor of the encryption library needs a parameter,
       // this parameter is the bchjs library
-      const BCHJS = bchWallet.BCHJS
-      const encryptLib = new EncryptLib(BCHJS)
+      // const BCHJS = bchWallet.BCHJS
+      const encryptLib = new EncryptLib({bchjs: bchWallet.bchjs})
 
       // Overwrite the bchjs instance of the encryption library,
       // for the bchjs instance of the client
-      encryptLib.bchjs = bchWallet.bchjs
+      // encryptLib.bchjs = bchWallet.bchjs
 
       _this.setState({
         encryptLib

@@ -45,13 +45,18 @@ class ReadMessages extends React.Component {
   }
 
   render () {
-    const { section, associatedNames, messagesReceived, messagesSent, inFetch } = _this.state
+    const {
+      section,
+      associatedNames,
+      messagesReceived,
+      messagesSent,
+      inFetch
+    } = _this.state
 
     return (
-      <div className='message-container'>
-
+      <div className="message-container">
         <Helmet
-          title='message.FullStack.cash'
+          title="message.FullStack.cash"
           meta={[
             { name: 'description', content: 'Pay BCH to send messages' },
             {
@@ -70,14 +75,15 @@ class ReadMessages extends React.Component {
           />
         )}
 
-        {_this.state.message &&
+        {_this.state.message && (
           <MessageCard
             message={_this.state.message}
             menuNavigation={_this.props.menuNavigation}
-          />}
+          />
+        )}
 
         {!_this.props.bchWallet && (
-          <Box padding='true' className='container-nofound'>
+          <Box padding="true" className="container-nofound">
             <Row>
               <Col xs={12}>
                 <em>You need to create or import a wallet</em>
@@ -112,7 +118,8 @@ class ReadMessages extends React.Component {
       // Notify the user if the message does not contain a
       // copy that can be decrypted by the sender
       if (message.sender === walletInfo.cashAddress && !msgObject.senderCopy) {
-        message.message = 'This message has been sent in an older version, so it can only be read by the receiver'
+        message.message =
+          'This message has been sent in an older version, so it can only be read by the receiver'
         message.error = true
         _this.setState({
           message
@@ -123,7 +130,10 @@ class ReadMessages extends React.Component {
 
       let encryptedMsg
       // Validating protocol versions
-      if (Array.isArray(msgObject.message) && Array.isArray(msgObject.receivers)) {
+      if (
+        Array.isArray(msgObject.message) &&
+        Array.isArray(msgObject.receivers)
+      ) {
         // Searchs for the associated message to the current wallet
         msgObject.receivers.map((val, i) => {
           if (val === walletInfo.cashAddress) {
@@ -217,12 +227,12 @@ class ReadMessages extends React.Component {
       if (!bchWallet) return null
       // The constructor of the encryption library needs a parameter,
       // this parameter is the bchjs library
-      const BCHJS = bchWallet.BCHJS
-      const encryptLib = new EncryptLib(BCHJS)
+      // const BCHJS = bchWallet.BCHJS
+      const encryptLib = new EncryptLib({ bchjs: bchWallet.bchjs })
 
       // Overwrite the bchjs instance of the encryption library,
       // for the bchjs instance of the client
-      encryptLib.bchjs = bchWallet.bchjs
+      // encryptLib.bchjs = bchWallet.bchjs
 
       _this.setState({
         encryptLib
@@ -264,7 +274,11 @@ class ReadMessages extends React.Component {
         messagesSent: [],
         messagesReceived: []
       })
-      _this.Notification.notify('Error', 'there was an error trying to fetch the messages', 'danger')
+      _this.Notification.notify(
+        'Error',
+        'there was an error trying to fetch the messages',
+        'danger'
+      )
 
       console.error(error)
     }
@@ -291,9 +305,7 @@ class ReadMessages extends React.Component {
         received,
         sent
       }
-    } catch (error) {
-
-    }
+    } catch (error) {}
   }
 
   // Find names associated to the sender address
