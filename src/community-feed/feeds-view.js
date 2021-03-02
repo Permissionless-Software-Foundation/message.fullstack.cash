@@ -86,6 +86,7 @@ class FeedView extends React.Component {
   async componentDidMount() {
     await _this.handleMessages()
   }
+
   async handleMessages() {
     try {
       const resp = await getMessages()
@@ -105,4 +106,5 @@ class FeedView extends React.Component {
     }
   }
 }
+
 export default FeedView
