@@ -25,7 +25,7 @@
     "@uppy/react": "^1.10.5",
     "@uppy/tus": "^1.7.5",
     "gatsby": "^2.25.2",
-    "gatsby-ipfs-web-wallet": "^1.20.1",
+    "gatsby-ipfs-web-wallet": "^1.20.3",
     "qrcode.react": "^1.0.0",
     "react-notifications-component": "^2.4.0"
   },
@@ -37,7 +37,7 @@
     "url": "https://github.com/Permissionless-Software-Foundation/message.fullstack.cash/issues"
   },
   "devDependencies": {
-    "semantic-release": "^17.3.9",
+    "semantic-release": "^17.4.0",
     "standard": "^14.3.4"
   },
   "release": {
