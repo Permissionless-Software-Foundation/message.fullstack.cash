@@ -9,24 +9,24 @@ class About extends React.Component {
   render () {
     return (
       <Content
-        title="About"
-        subTitle=""
-        browserTitle="About | Message.FullStack.Cash"
+        title='About'
+        subTitle=''
+        browserTitle='About | Message.FullStack.Cash'
       >
         <Row>
           <Col xs={12}>
             <Box
-              title="Message.FullStack.Cash"
-              type="primary"
+              title='Message.FullStack.Cash'
+              type='primary'
               closable
               collapsable
             >
               <p>
                 Message.FullStack.Cash is the primary communication tool for the{' '}
                 <a
-                  href="https://PSFoundation.cash"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href='https://PSFoundation.cash'
+                  target='_blank'
+                  rel='noopener noreferrer'
                 >
                   Permissionless Software Foundation
                 </a>{' '}
@@ -48,9 +48,9 @@ class About extends React.Component {
                   It allows cryptographic signing of messages. This is used to
                   prove ownership of an address, to gain access to{' '}
                   <a
-                    href="https://t.me/psf_vip"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href='https://t.me/psf_vip'
+                    target='_blank'
+                    rel='noopener noreferrer'
                   >
                     the PSF VIP Telegram channel
                   </a>
@@ -58,9 +58,9 @@ class About extends React.Component {
               </ul>
               <p>
                 <a
-                  href="https://youtu.be/KOlM4dU6Gj0"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href='https://youtu.be/KOlM4dU6Gj0'
+                  target='_blank'
+                  rel='noopener noreferrer'
                 >
                   Here is a video showing how to use the different PSF
                   communication channels.
@@ -72,9 +72,9 @@ class About extends React.Component {
                 in the footer at the bottom of the page. The code for this web
                 wallet can be found{' '}
                 <a
-                  href="https://github.com/Permissionless-Software-Foundation/message.fullstack.cash"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href='https://github.com/Permissionless-Software-Foundation/message.fullstack.cash'
+                  target='_blank'
+                  rel='noopener noreferrer'
                 >
                   here
                 </a>
@@ -83,9 +83,9 @@ class About extends React.Component {
               <p>
                 This app is built on top of{' '}
                 <a
-                  href="https://github.com/Permissionless-Software-Foundation/bch-wallet-starter"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href='https://github.com/Permissionless-Software-Foundation/bch-wallet-starter'
+                  target='_blank'
+                  rel='noopener noreferrer'
                 >
                   bch-wallet-starter
                 </a>
@@ -93,9 +93,9 @@ class About extends React.Component {
                 functionality. You can build your own app using that software
                 too.{' '}
                 <a
-                  href="https://youtu.be/G7ptg7VIRnk"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href='https://youtu.be/G7ptg7VIRnk'
+                  target='_blank'
+                  rel='noopener noreferrer'
                 >
                   Here is a video showing how.
                 </a>
@@ -109,9 +109,9 @@ class About extends React.Component {
                 support the developers who work on this web wallet and other
                 software sponsored by the{' '}
                 <a
-                  href="https://psfoundation.cash"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href='https://psfoundation.cash'
+                  target='_blank'
+                  rel='noopener noreferrer'
                 >
                   Permissionless Software Foundation
                 </a>
