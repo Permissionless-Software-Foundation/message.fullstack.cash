@@ -41,17 +41,18 @@ class ReadMessage extends React.Component {
       messages: [],
       associatedNames: {},
       isLoaded: false,
-      section: 'inbox'
+      section: 'inbox',
+      tableKey: _this.getRandomKey()
     }
   }
 
   render () {
     return (
-      <div className=''>
+      <div className="">
         <ReactNotification />
 
         <Helmet
-          title='message.FullStack.cash'
+          title="message.FullStack.cash"
           meta={[
             { name: 'description', content: 'Pay BCH to send messages' },
             {
@@ -60,60 +61,68 @@ class ReadMessage extends React.Component {
             }
           ]}
         />
-        <Box loaded={_this.state.isLoaded} border className='inbox-card'>
-          <div className='inbox-header'>
+        <Box loaded={_this.state.isLoaded} border className="inbox-card">
+          <div className="inbox-header">
             <div>
               <Button
-                className={_this.state.section === 'inbox' ? 'inbox-send-tab-selected' : 'inbox-send-tab'}
+                className={
+                  _this.state.section === 'inbox'
+                    ? 'inbox-send-tab-selected'
+                    : 'inbox-send-tab'
+                }
                 onClick={() => _this.changeSection('inbox')}
-                text='Inbox'
+                text="Inbox"
               />
               <Button
-                className={_this.state.section === 'sent' ? 'inbox-send-tab-selected' : 'inbox-send-tab'}
+                className={
+                  _this.state.section === 'sent'
+                    ? 'inbox-send-tab-selected'
+                    : 'inbox-send-tab'
+                }
                 onClick={() => _this.changeSection('sent')}
-                text='Sent'
+                text="Sent"
               />
             </div>
             <hr />
 
-            <div className='inbox-search'>
+            <div className="inbox-search">
               <Text
-                placeholder='Search Mail'
-                labelPosition='none'
-                iconRight='fas-search'
-                size='md'
+                placeholder="Search Mail"
+                labelPosition="none"
+                iconRight="fas-search"
+                size="md"
               />
             </div>
           </div>
-          <div className='inbox-inputs'>
-            <div className='inbox-control'>
-              <Button className='btn-icon-add' icon='fa-trash' />
-              <Button className='btn-icon-add' icon='fa-reply' />
-              <Button className='btn-icon-add' icon='fa-share' />
-              <Button className='btn-icon-add' icon='fa-sync-alt' />
+          <div className="inbox-inputs">
+            <div className="inbox-control">
+              <Button className="btn-icon-add" icon="fa-trash" />
+              <Button className="btn-icon-add" icon="fa-reply" />
+              <Button className="btn-icon-add" icon="fa-share" />
+              <Button className="btn-icon-add" icon="fa-sync-alt" />
             </div>
-            <div clas='inbox-pagination'>
-              <span className='pagination-info'>
+            <div clas="inbox-pagination">
+              <span className="pagination-info">
                 {`${
                   _this.state.selectedPage * maxMailRender - (maxMailRender - 1)
                 }
                  - ${
       _this.state.selectedPage * maxMailRender <
-                    _this.state.inboxData.length
+                   _this.state.inboxData.length
         ? _this.state.selectedPage * maxMailRender
         : _this.state.inboxData.length
       }
                  / ${_this.state.inboxData.length}`}
               </span>
               <Button
-                className='btn-icon-add'
-                icon='fa-chevron-left'
+                className="btn-icon-add"
+                icon="fa-chevron-left"
                 onClick={() => _this.changePage(_this.state.selectedPage - 1)}
                 disabled={_this.state.selectedPage <= 1}
               />
               <Button
-                className='btn-icon-add'
-                icon='fa-chevron-right'
+                className="btn-icon-add"
+                icon="fa-chevron-right"
                 onClick={() => _this.changePage(_this.state.selectedPage + 1)}
                 disabled={_this.state.selectedPage >= _this.state.pagesAmount}
               />
@@ -121,6 +130,7 @@ class ReadMessage extends React.Component {
           </div>
           {_this.state.isLoaded && (
             <SimpleTable
+              key={_this.state.tableKey}
               columns={columns}
               data={_this.state.pages[_this.state.selectedPage - 1]}
             />
@@ -133,7 +143,8 @@ class ReadMessage extends React.Component {
   changeSection (section) {
     _this.props.handleChangeSection(section)
     _this.setState({
-      section
+      section,
+      selectedPage: 1
     })
   }
 
@@ -143,7 +154,8 @@ class ReadMessage extends React.Component {
       const { messages } = _this.props
       // console.log(`messages: ${JSON.stringify(messages, null, 2)}`)
       _this.setState({
-        messages
+        messages,
+        tableKey: _this.getRandomKey()
       })
       this.populateInbox(messages)
     }
@@ -225,14 +237,14 @@ class ReadMessage extends React.Component {
       const col = {
         select: (
           <input
-            className='inbox-checkbox'
-            type='checkbox'
+            className="inbox-checkbox"
+            type="checkbox"
             onChange={() => _this.selectMail(i)}
           />
         ),
         name: (
           <a
-            className='inbox-sender'
+            className="inbox-sender"
             onClick={() => _this.handleSelectedMessage(message)}
           >
             {message.name}
@@ -288,8 +300,15 @@ class ReadMessage extends React.Component {
     }
 
     _this.setState({
-      selectedPage: i
+      selectedPage: i,
+      tableKey: _this.getRandomKey()
     })
+  }
+  // This is used to change the unique key of the
+  // SimpleTable component, this will make the component
+  // re-render to reflect the view changes
+  getRandomKey () {
+    return Math.random() * (1000000 - 100) + 100
   }
 }
 
