@@ -41,7 +41,8 @@ class ReadMessage extends React.Component {
       messages: [],
       associatedNames: {},
       isLoaded: false,
-      section: 'inbox'
+      section: 'inbox',
+      tableKey: _this.getRandomKey()
     }
   }
 
@@ -64,12 +65,20 @@ class ReadMessage extends React.Component {
           <div className='inbox-header'>
             <div>
               <Button
-                className={_this.state.section === 'inbox' ? 'inbox-send-tab-selected' : 'inbox-send-tab'}
+                className={
+                  _this.state.section === 'inbox'
+                    ? 'inbox-send-tab-selected'
+                    : 'inbox-send-tab'
+                }
                 onClick={() => _this.changeSection('inbox')}
                 text='Inbox'
               />
               <Button
-                className={_this.state.section === 'sent' ? 'inbox-send-tab-selected' : 'inbox-send-tab'}
+                className={
+                  _this.state.section === 'sent'
+                    ? 'inbox-send-tab-selected'
+                    : 'inbox-send-tab'
+                }
                 onClick={() => _this.changeSection('sent')}
                 text='Sent'
               />
@@ -99,7 +108,7 @@ class ReadMessage extends React.Component {
                 }
                  - ${
       _this.state.selectedPage * maxMailRender <
-                    _this.state.inboxData.length
+                   _this.state.inboxData.length
         ? _this.state.selectedPage * maxMailRender
         : _this.state.inboxData.length
       }
@@ -121,6 +130,7 @@ class ReadMessage extends React.Component {
           </div>
           {_this.state.isLoaded && (
             <SimpleTable
+              key={_this.state.tableKey}
               columns={columns}
               data={_this.state.pages[_this.state.selectedPage - 1]}
             />
@@ -133,7 +143,8 @@ class ReadMessage extends React.Component {
   changeSection (section) {
     _this.props.handleChangeSection(section)
     _this.setState({
-      section
+      section,
+      selectedPage: 1
     })
   }
 
@@ -143,7 +154,8 @@ class ReadMessage extends React.Component {
       const { messages } = _this.props
       // console.log(`messages: ${JSON.stringify(messages, null, 2)}`)
       _this.setState({
-        messages
+        messages,
+        tableKey: _this.getRandomKey()
       })
       this.populateInbox(messages)
     }
@@ -288,8 +300,16 @@ class ReadMessage extends React.Component {
     }
 
     _this.setState({
-      selectedPage: i
+      selectedPage: i,
+      tableKey: _this.getRandomKey()
     })
+  }
+
+  // This is used to change the unique key of the
+  // SimpleTable component, this will make the component
+  // re-render to reflect the view changes
+  getRandomKey () {
+    return Math.random() * (1000000 - 100) + 100
   }
 }
 

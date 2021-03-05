@@ -54,9 +54,9 @@ class ReadMessages extends React.Component {
     } = _this.state
 
     return (
-      <div className="message-container">
+      <div className='message-container'>
         <Helmet
-          title="message.FullStack.cash"
+          title='message.FullStack.cash'
           meta={[
             { name: 'description', content: 'Pay BCH to send messages' },
             {
@@ -83,7 +83,7 @@ class ReadMessages extends React.Component {
         )}
 
         {!_this.props.bchWallet && (
-          <Box padding="true" className="container-nofound">
+          <Box padding='true' className='container-nofound'>
             <Row>
               <Col xs={12}>
                 <em>You need to create or import a wallet</em>
