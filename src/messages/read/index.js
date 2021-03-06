@@ -252,7 +252,7 @@ class ReadMessages extends React.Component {
         return null
       }
       const messages = await getMail(cashAddress)
-      console.log(`Messages : ${JSON.stringify(messages, null, 2)}`)
+      // console.log(`Messages : ${JSON.stringify(messages, null, 2)}`)
 
       // Search names associated to the sender address
       const associatedNames = await _this.findNames(messages)
@@ -260,7 +260,7 @@ class ReadMessages extends React.Component {
 
       // Split messages
       const messagesObject = _this.splitMessages(messages)
-      console.log(`messagesObject : ${JSON.stringify(messagesObject, null, 2)}`)
+      // console.log(`messagesObject : ${JSON.stringify(messagesObject, null, 2)}`)
 
       _this.setState({
         messagesReceived: messagesObject.received,
