@@ -1,12 +1,12 @@
 /* eslint-disable */
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import { Button, Row, Col, Box } from 'adminlte-2-react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import React, { Component } from "react"
+import PropTypes from "prop-types"
+import CircularProgress from "@material-ui/core/CircularProgress"
+import { Button, Row, Col, Box } from "adminlte-2-react"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
-const QRCode = require('qrcode.react')
-const cloudUrl = 'https://hub.textile.io/ipfs/'
+const QRCode = require("qrcode.react")
+const cloudUrl = "https://hub.textile.io/ipfs/"
 
 const SERVER = process.env.FILE_SERVER
 
@@ -19,12 +19,12 @@ class QrCode extends React.Component {
     this.Notification = Notification
 
     this.state = {
-      msgStatus: 'Checking for payment...',
-      hash: '',
+      msgStatus: "Checking for payment...",
+      hash: "",
       startedLoop: true,
-      cloudLink: '',
-      errMsg: '',
-      success: false
+      cloudLink: "",
+      errMsg: "",
+      success: false,
     }
   }
 
@@ -71,8 +71,8 @@ class QrCode extends React.Component {
                   className="status-container col-12"
                   style={
                     _this.state.hash
-                      ? { backgroundColor: 'white' }
-                      : { backgroundColor: 'white' }
+                      ? { backgroundColor: "white" }
+                      : { backgroundColor: "white" }
                   }
                 >
                   {/* Show progress*/}
@@ -125,10 +125,10 @@ class QrCode extends React.Component {
   }
 
   goToCloud() {
-    window.open(`${cloudUrl}${_this.state.hash}`, '_blank')
+    window.open(`${cloudUrl}${_this.state.hash}`, "_blank")
   }
   back() {
-    _this.props.changeSection('uppy')
+    _this.props.changeSection("uppy")
     _this.props.resetValues()
   }
 
@@ -139,24 +139,25 @@ class QrCode extends React.Component {
     let hash
     const myInterval = setInterval(async () => {
       _this.setState({
-        startedLoop: true
+        startedLoop: true,
       })
       hash = await _this.checkHash(fileId)
 
       if (hash) {
         // Verify if the hash is an error message
-        if (hash.match('Error')) {
+        if (hash.match("Error")) {
           _this.setState({
-            msgStatus: 'The file could not be uploaded',
+            msgStatus:
+              "The file could not be uploaded. Please ensure there are no special characters in the file name, and try again.",
             errMsg: hash,
-            success: true
+            success: true,
           })
         } else {
           _this.setState({
-            msgStatus: 'File uploaded successfully!',
+            msgStatus: "File uploaded successfully!",
             hash: hash,
             cloudLink: `${cloudUrl}${hash}`,
-            success: true
+            success: true,
           })
         }
 
@@ -166,7 +167,7 @@ class QrCode extends React.Component {
   }
 
   async checkHash(fileId) {
-    let hash = ''
+    let hash = ""
     const resultFile = await _this.getFileById(fileId)
 
     const fileData = resultFile.file
@@ -181,10 +182,10 @@ class QrCode extends React.Component {
     // Try to get  metadata by id
     try {
       const options = {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json'
-        }
+          "Content-Type": "application/json",
+        },
       }
       const resp = await fetch(`${SERVER}/files/${fileId}`, options)
       if (resp.ok) {
@@ -204,6 +205,6 @@ QrCode.propTypes = {
   hostingCostUSD: PropTypes.number.isRequired,
   changeSection: PropTypes.func.isRequired,
   resetValues: PropTypes.func.isRequired,
-  fileId: PropTypes.string.isRequired
+  fileId: PropTypes.string.isRequired,
 }
 export default QrCode
